@@ -12,9 +12,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
 
         let mut output = module_name;
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: double_colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         });
 
         Ok((s, output))
@@ -30,9 +30,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
 
             let mut output = generics;
 
-            output.push(syntax::HighlightedSpan {
+            output.push(dialect::HighlightedSpan {
                 text: double_colon,
-                group: Some(syntax::HighlightGroup::Separator),
+                group: Some(dialect::HighlightGroup::Separator),
             });
 
             Ok((s, output))
@@ -40,9 +40,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
 
         let mut output = ty_name;
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: double_colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         });
 
         if let Some(mut turbofish) = turbofish {
@@ -53,9 +53,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     })(s)?;
 
     let mut output = if let Some(leading_colons) = leading_colons {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: leading_colons,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         }]
     } else {
         vec![]

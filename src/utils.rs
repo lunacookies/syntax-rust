@@ -118,9 +118,9 @@ pub(crate) fn comma_separated<'input, P: Fn(&'input str) -> ParseResult<'input> 
         expect(
             |s| {
                 map(tag(","), |s| {
-                    vec![syntax::HighlightedSpan {
+                    vec![dialect::HighlightedSpan {
                         text: s,
-                        group: Some(syntax::HighlightGroup::Separator),
+                        group: Some(dialect::HighlightGroup::Separator),
                     }]
                 })(s)
             },
@@ -137,14 +137,14 @@ pub(crate) fn comma_separated<'input, P: Fn(&'input str) -> ParseResult<'input> 
 
         let mut output = parser_output;
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: parser_output_space,
             group: None,
         });
 
         output.append(&mut comma);
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: comma_space,
             group: None,
         });
@@ -164,7 +164,7 @@ pub(crate) fn comma_separated<'input, P: Fn(&'input str) -> ParseResult<'input> 
             output.append(&mut last_without_comma);
         }
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: space,
             group: None,
         });
@@ -175,9 +175,9 @@ pub(crate) fn comma_separated<'input, P: Fn(&'input str) -> ParseResult<'input> 
 
 fn error_1_char(s: &str) -> ParseResult<'_> {
     map(take(1usize), |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::Error),
+            group: Some(dialect::HighlightGroup::Error),
         }]
     })(s)
 }

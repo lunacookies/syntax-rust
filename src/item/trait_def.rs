@@ -27,7 +27,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         let (s, space) = take_whitespace0(s)?;
 
         let mut output = item;
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: space,
             group: None,
         });
@@ -39,19 +39,19 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, close_brace) = tag("}")(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::InterfaceDef),
+            group: Some(dialect::HighlightGroup::InterfaceDef),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
@@ -61,7 +61,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         output.append(&mut generics);
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: generics_space,
         group: None,
     });
@@ -71,15 +71,15 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     }
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: bounds_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace_space,
             group: None,
         },
@@ -88,13 +88,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut items.concat());
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
     ]);
 

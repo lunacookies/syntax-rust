@@ -17,9 +17,9 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let mut output = number;
 
     if let Some(suffix) = suffix {
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: suffix,
-            group: Some(syntax::HighlightGroup::Number),
+            group: Some(dialect::HighlightGroup::Number),
         });
     }
 
@@ -28,9 +28,9 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
 
 fn decimal(s: &str) -> ParseResult<'_> {
     map(digits(|c| c.is_ascii_digit()), |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::Number),
+            group: Some(dialect::HighlightGroup::Number),
         }]
     })(s)
 }
@@ -40,21 +40,21 @@ fn binary(s: &str) -> ParseResult<'_> {
     let (s, underscore) = opt(tag("_"))(s)?;
     let (s, digits) = digits(|c| c == '0' || c == '1')(s)?;
 
-    let mut output = vec![syntax::HighlightedSpan {
+    let mut output = vec![dialect::HighlightedSpan {
         text: leader,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     }];
 
     if let Some(underscore) = underscore {
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: underscore,
-            group: Some(syntax::HighlightGroup::Number),
+            group: Some(dialect::HighlightGroup::Number),
         });
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: digits,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     });
 
     Ok((s, output))
@@ -65,21 +65,21 @@ fn octal(s: &str) -> ParseResult<'_> {
     let (s, underscore) = opt(tag("_"))(s)?;
     let (s, digits) = digits(|c| c >= '0' && c <= '7')(s)?;
 
-    let mut output = vec![syntax::HighlightedSpan {
+    let mut output = vec![dialect::HighlightedSpan {
         text: leader,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     }];
 
     if let Some(underscore) = underscore {
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: underscore,
-            group: Some(syntax::HighlightGroup::Number),
+            group: Some(dialect::HighlightGroup::Number),
         });
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: digits,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     });
 
     Ok((s, output))
@@ -91,21 +91,21 @@ fn hex(s: &str) -> ParseResult<'_> {
     let (s, digits) =
         digits(|c| c.is_ascii_digit() || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))(s)?;
 
-    let mut output = vec![syntax::HighlightedSpan {
+    let mut output = vec![dialect::HighlightedSpan {
         text: leader,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     }];
 
     if let Some(underscore) = underscore {
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: underscore,
-            group: Some(syntax::HighlightGroup::Number),
+            group: Some(dialect::HighlightGroup::Number),
         });
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: digits,
-        group: Some(syntax::HighlightGroup::Number),
+        group: Some(dialect::HighlightGroup::Number),
     });
 
     Ok((s, output))

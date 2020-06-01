@@ -8,9 +8,9 @@ use {
 
 pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     let user_ty = map(pascal_case, |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::TyUse),
+            group: Some(dialect::HighlightGroup::TyUse),
         }]
     });
 
@@ -21,9 +21,9 @@ fn primitive_ty(s: &str) -> ParseResult<'_> {
     map(
         alt((int_ty, float_ty, tag("str"), tag("bool"), tag("!"))),
         |s| {
-            vec![syntax::HighlightedSpan {
+            vec![dialect::HighlightedSpan {
                 text: s,
-                group: Some(syntax::HighlightGroup::PrimitiveTy),
+                group: Some(dialect::HighlightGroup::PrimitiveTy),
             }]
         },
     )(s)

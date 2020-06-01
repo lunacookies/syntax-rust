@@ -6,13 +6,13 @@ use {
 pub(crate) fn usage(s: &str) -> ParseResult<'_> {
     map(pair(tag("'"), snake_case), |(tick, name)| {
         vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: tick,
-                group: Some(syntax::HighlightGroup::SpecialIdentUse),
+                group: Some(dialect::HighlightGroup::SpecialIdentUse),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: name,
-                group: Some(syntax::HighlightGroup::SpecialIdentUse),
+                group: Some(dialect::HighlightGroup::SpecialIdentUse),
             },
         ]
     })(s)
@@ -21,13 +21,13 @@ pub(crate) fn usage(s: &str) -> ParseResult<'_> {
 pub(crate) fn def(s: &str) -> ParseResult<'_> {
     map(pair(tag("'"), snake_case), |(tick, name)| {
         vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: tick,
-                group: Some(syntax::HighlightGroup::SpecialIdentDef),
+                group: Some(dialect::HighlightGroup::SpecialIdentDef),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: name,
-                group: Some(syntax::HighlightGroup::SpecialIdentDef),
+                group: Some(dialect::HighlightGroup::SpecialIdentDef),
             },
         ]
     })(s)

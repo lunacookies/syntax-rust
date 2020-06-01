@@ -19,11 +19,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, close_brace) = tag(FIELDS_END)(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace_space,
             group: None,
         },
@@ -32,13 +32,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut fields);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
     ]);
 
@@ -55,19 +55,19 @@ fn field(s: &str) -> ParseResult<'_> {
     let (s, mut ty) = expect(crate::ty, None)(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::MemberDef),
+            group: Some(dialect::HighlightGroup::MemberDef),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon_space,
             group: None,
         },

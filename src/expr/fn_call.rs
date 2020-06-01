@@ -14,9 +14,9 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         let (s, double_colon) = tag("::")(s)?;
         let (s, mut generics) = crate::generics::usage(s)?;
 
-        let mut output = vec![syntax::HighlightedSpan {
+        let mut output = vec![dialect::HighlightedSpan {
             text: double_colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         }];
 
         output.append(&mut generics);
@@ -37,9 +37,9 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
 
     let mut output = path;
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: name,
-        group: Some(syntax::HighlightGroup::FunctionCall),
+        group: Some(dialect::HighlightGroup::FunctionCall),
     });
 
     if let Some(mut turbofish) = turbofish {
@@ -47,15 +47,15 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     }
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: turbofish_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren_space,
             group: None,
         },
@@ -64,13 +64,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut params);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: params_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
     ]);
 

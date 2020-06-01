@@ -20,11 +20,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         let (s, mut ty) = crate::ty(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: equals,
-                group: Some(syntax::HighlightGroup::AssignOper),
+                group: Some(dialect::HighlightGroup::AssignOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: equals_space,
                 group: None,
             },
@@ -40,19 +40,19 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, semicolon) = tag(";")(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::TyDef),
+            group: Some(dialect::HighlightGroup::TyDef),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
@@ -63,13 +63,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     }
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: rhs_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: semicolon,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         },
     ]);
 

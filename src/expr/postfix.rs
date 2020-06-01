@@ -17,11 +17,11 @@ fn method_call(s: &str) -> ParseResult<'_> {
     let (s, mut function_call) = super::fn_call(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: period,
-            group: Some(syntax::HighlightGroup::MemberOper),
+            group: Some(dialect::HighlightGroup::MemberOper),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: period_space,
             group: None,
         },
@@ -39,17 +39,17 @@ fn field_access(s: &str) -> ParseResult<'_> {
     let (s, field) = snake_case(s)?;
 
     let output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: period,
-            group: Some(syntax::HighlightGroup::MemberOper),
+            group: Some(dialect::HighlightGroup::MemberOper),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: period_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: field,
-            group: Some(syntax::HighlightGroup::MemberUse),
+            group: Some(dialect::HighlightGroup::MemberUse),
         },
     ];
 
@@ -58,9 +58,9 @@ fn field_access(s: &str) -> ParseResult<'_> {
 
 fn try_oper(s: &str) -> ParseResult<'_> {
     map(tag("?"), |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::OtherOper),
+            group: Some(dialect::HighlightGroup::OtherOper),
         }]
     })(s)
 }

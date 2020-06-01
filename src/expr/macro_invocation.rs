@@ -39,23 +39,23 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let mut output = path;
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::MacroUse),
+            group: Some(dialect::HighlightGroup::MacroUse),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: bang,
-            group: Some(syntax::HighlightGroup::MacroUse),
+            group: Some(dialect::HighlightGroup::MacroUse),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: bang_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_delim,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_delim_space,
             group: None,
         },
@@ -64,13 +64,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut params);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: params_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_delim,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
     ]);
 

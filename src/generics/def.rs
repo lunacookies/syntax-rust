@@ -15,7 +15,7 @@ fn param(s: &str) -> ParseResult<'_> {
 
     let mut output = param;
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: param_space,
         group: None,
     });

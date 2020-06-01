@@ -19,7 +19,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let mut output = path;
 
     output.append(&mut name);
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: name_space,
         group: None,
     });

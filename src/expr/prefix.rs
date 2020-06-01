@@ -10,11 +10,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
 fn deref(s: &str) -> ParseResult<'_> {
     map(pair(tag("*"), take_whitespace0), |(oper, space)| {
         vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: oper,
-                group: Some(syntax::HighlightGroup::PointerOper),
+                group: Some(dialect::HighlightGroup::PointerOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: space,
                 group: None,
             },
@@ -25,11 +25,11 @@ fn deref(s: &str) -> ParseResult<'_> {
 fn borrow_mut(s: &str) -> ParseResult<'_> {
     map(pair(tag("&mut"), take_whitespace0), |(oper, space)| {
         vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: oper,
-                group: Some(syntax::HighlightGroup::PointerOper),
+                group: Some(dialect::HighlightGroup::PointerOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: space,
                 group: None,
             },
@@ -40,11 +40,11 @@ fn borrow_mut(s: &str) -> ParseResult<'_> {
 fn borrow(s: &str) -> ParseResult<'_> {
     map(pair(tag("&"), take_whitespace0), |(oper, space)| {
         vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: oper,
-                group: Some(syntax::HighlightGroup::PointerOper),
+                group: Some(dialect::HighlightGroup::PointerOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: space,
                 group: None,
             },

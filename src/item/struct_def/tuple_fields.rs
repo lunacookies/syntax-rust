@@ -23,11 +23,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, semicolon) = tag(";")(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren_space,
             group: None,
         },
@@ -36,21 +36,21 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut fields);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: fields_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_paren_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: semicolon,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         },
     ]);
 

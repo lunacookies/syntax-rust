@@ -22,19 +22,19 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         let (s, mut cond_and_body) = parse_cond_and_body(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: else_keyword,
-                group: Some(syntax::HighlightGroup::CtrlFlowKeyword),
+                group: Some(dialect::HighlightGroup::CtrlFlowKeyword),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: else_keyword_space,
                 group: None,
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: if_keyword,
-                group: Some(syntax::HighlightGroup::CtrlFlowKeyword),
+                group: Some(dialect::HighlightGroup::CtrlFlowKeyword),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: if_keyword_space,
                 group: None,
             },
@@ -53,11 +53,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         let (s, body_space) = take_whitespace0(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: keyword,
-                group: Some(syntax::HighlightGroup::CtrlFlowKeyword),
+                group: Some(dialect::HighlightGroup::CtrlFlowKeyword),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: keyword_space,
                 group: None,
             },
@@ -65,7 +65,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
 
         output.append(&mut body);
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: body_space,
             group: None,
         });
@@ -74,11 +74,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     })(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::CtrlFlowKeyword),
+            group: Some(dialect::HighlightGroup::CtrlFlowKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
@@ -104,14 +104,14 @@ fn parse_cond_and_body(s: &str) -> ParseResult<'_> {
 
     let mut output = cond;
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: cond_space,
         group: None,
     });
 
     output.append(&mut body);
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: body_space,
         group: None,
     });

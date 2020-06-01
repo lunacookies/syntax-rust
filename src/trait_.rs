@@ -17,11 +17,11 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     let mut output = path;
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::InterfaceUse),
+            group: Some(dialect::HighlightGroup::InterfaceUse),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },

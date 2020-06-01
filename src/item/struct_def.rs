@@ -28,19 +28,19 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, mut fields) = fields(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::TyDef),
+            group: Some(dialect::HighlightGroup::TyDef),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
@@ -50,7 +50,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         output.append(&mut generics);
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: generics_space,
         group: None,
     });
@@ -66,9 +66,9 @@ fn fields(s: &str) -> ParseResult<'_> {
 
 fn unnamed(s: &str) -> ParseResult<'_> {
     map(tag(";"), |semicolon| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: semicolon,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         }]
     })(s)
 }

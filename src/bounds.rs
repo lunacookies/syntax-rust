@@ -18,15 +18,15 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
         let (s, mut bound) = bound(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: space,
                 group: None,
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: plus,
-                group: Some(syntax::HighlightGroup::BinaryOper),
+                group: Some(dialect::HighlightGroup::BinaryOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: plus_space,
                 group: None,
             },
@@ -38,11 +38,11 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     })(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon_space,
             group: None,
         },

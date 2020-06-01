@@ -18,7 +18,7 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
         let (s, space) = take_whitespace0(s)?;
 
         let mut output = statement;
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: space,
             group: None,
         });
@@ -30,11 +30,11 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     let (s, close_brace) = tag(BLOCK_END)(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_brace_space,
             group: None,
         },
@@ -43,13 +43,13 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut statements.concat());
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_brace,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
     ]);
 

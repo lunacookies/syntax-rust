@@ -27,11 +27,11 @@ fn parse<'input, P: Fn(&'input str) -> ParseResult<'input> + Copy + 'input>(
         let (s, close_bracket) = tag(GENERICS_END)(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: open_bracket,
-                group: Some(syntax::HighlightGroup::Delimiter),
+                group: Some(dialect::HighlightGroup::Delimiter),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: open_bracket_space,
                 group: None,
             },
@@ -40,13 +40,13 @@ fn parse<'input, P: Fn(&'input str) -> ParseResult<'input> + Copy + 'input>(
         output.append(&mut params);
 
         output.extend_from_slice(&[
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: close_bracket_space,
                 group: None,
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: close_bracket,
-                group: Some(syntax::HighlightGroup::Delimiter),
+                group: Some(dialect::HighlightGroup::Delimiter),
             },
         ]);
 

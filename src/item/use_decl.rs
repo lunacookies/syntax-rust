@@ -19,11 +19,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, semicolon) = tag(";")(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
@@ -31,7 +31,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
 
     output.append(&mut path);
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: path_space,
         group: None,
     });
@@ -39,13 +39,13 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut ident);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: ident_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: semicolon,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         },
     ]);
 

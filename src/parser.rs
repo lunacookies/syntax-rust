@@ -13,7 +13,7 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
 
 fn whitespace(s: &str) -> ParseResult<'_> {
     map(take_whitespace1, |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
             group: None,
         }]
@@ -30,9 +30,9 @@ fn error(s: &str) -> ParseResult<'_> {
             take(1usize),
         )),
         |s| {
-            vec![syntax::HighlightedSpan {
+            vec![dialect::HighlightedSpan {
                 text: s,
-                group: Some(syntax::HighlightGroup::Error),
+                group: Some(dialect::HighlightGroup::Error),
             }]
         },
     )(s)

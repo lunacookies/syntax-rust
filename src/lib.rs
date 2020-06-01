@@ -29,11 +29,11 @@ use {
 #[derive(Debug, PartialEq)]
 pub struct RustHighlighter;
 
-impl syntax::Highlight for RustHighlighter {
-    fn highlight<'input>(&self, input: &'input str) -> Vec<syntax::HighlightedSpan<'input>> {
+impl dialect::Highlight for RustHighlighter {
+    fn highlight<'input>(&self, input: &'input str) -> Vec<dialect::HighlightedSpan<'input>> {
         let (_remaining_input, spans) = nom::multi::many0(parser::parse)(input).unwrap();
         spans.into_iter().flatten().collect()
     }
 }
 
-type ParseResult<'text> = nom::IResult<&'text str, Vec<syntax::HighlightedSpan<'text>>>;
+type ParseResult<'text> = nom::IResult<&'text str, Vec<dialect::HighlightedSpan<'text>>>;

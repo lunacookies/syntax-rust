@@ -9,17 +9,17 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, end_quote) = tag("\"")(s)?;
 
     let output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: start_quote,
-            group: Some(syntax::HighlightGroup::StringDelimiter),
+            group: Some(dialect::HighlightGroup::StringDelimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: contents,
-            group: Some(syntax::HighlightGroup::String),
+            group: Some(dialect::HighlightGroup::String),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: end_quote,
-            group: Some(syntax::HighlightGroup::StringDelimiter),
+            group: Some(dialect::HighlightGroup::StringDelimiter),
         },
     ];
 

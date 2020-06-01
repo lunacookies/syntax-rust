@@ -29,11 +29,11 @@ fn let_(s: &str) -> ParseResult<'_> {
         let (s, ty_space) = take_whitespace0(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: colon,
-                group: Some(syntax::HighlightGroup::Separator),
+                group: Some(dialect::HighlightGroup::Separator),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: colon_space,
                 group: None,
             },
@@ -41,7 +41,7 @@ fn let_(s: &str) -> ParseResult<'_> {
 
         output.append(&mut ty);
 
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: ty_space,
             group: None,
         });
@@ -57,18 +57,18 @@ fn let_(s: &str) -> ParseResult<'_> {
         let (s, expr_space) = take_whitespace0(s)?;
 
         let mut output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: equals,
-                group: Some(syntax::HighlightGroup::AssignOper),
+                group: Some(dialect::HighlightGroup::AssignOper),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: equals_space,
                 group: None,
             },
         ];
 
         output.append(&mut expr);
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: expr_space,
             group: None,
         });
@@ -79,9 +79,9 @@ fn let_(s: &str) -> ParseResult<'_> {
     let (s, mut semicolon) = expect(
         |s| {
             map(tag(";"), |s| {
-                vec![syntax::HighlightedSpan {
+                vec![dialect::HighlightedSpan {
                     text: s,
-                    group: Some(syntax::HighlightGroup::Terminator),
+                    group: Some(dialect::HighlightGroup::Terminator),
                 }]
             })(s)
         },
@@ -89,18 +89,18 @@ fn let_(s: &str) -> ParseResult<'_> {
     )(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
     ];
 
     output.append(&mut pattern);
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: pattern_space,
         group: None,
     });
@@ -125,15 +125,15 @@ fn expr_in_statement(s: &str) -> ParseResult<'_> {
     let (s, semicolon) = opt(tag(";"))(s)?;
 
     let mut output = expr;
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: expr_space,
         group: None,
     });
 
     if let Some(semicolon) = semicolon {
-        output.push(syntax::HighlightedSpan {
+        output.push(dialect::HighlightedSpan {
             text: semicolon,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         });
     }
 

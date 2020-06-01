@@ -35,9 +35,9 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, return_type_space) = take_whitespace0(s)?;
 
     let semicolon = map(tag(";"), |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::Terminator),
+            group: Some(dialect::HighlightGroup::Terminator),
         }]
     });
 
@@ -45,19 +45,19 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     let (s, mut body) = alt((crate::block, semicolon))(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword,
-            group: Some(syntax::HighlightGroup::OtherKeyword),
+            group: Some(dialect::HighlightGroup::OtherKeyword),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: keyword_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::FunctionDef),
+            group: Some(dialect::HighlightGroup::FunctionDef),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
@@ -68,15 +68,15 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     }
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: generics_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: open_paren_space,
             group: None,
         },
@@ -85,11 +85,11 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
     output.append(&mut params);
 
     output.extend_from_slice(&[
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_paren,
-            group: Some(syntax::HighlightGroup::Delimiter),
+            group: Some(dialect::HighlightGroup::Delimiter),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: close_paren_space,
             group: None,
         },
@@ -99,7 +99,7 @@ pub(super) fn parse(s: &str) -> ParseResult<'_> {
         output.append(&mut return_type);
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: return_type_space,
         group: None,
     });
@@ -119,19 +119,19 @@ fn param(s: &str) -> ParseResult<'_> {
     let (s, mut ty) = crate::ty(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name,
-            group: Some(syntax::HighlightGroup::FunctionParam),
+            group: Some(dialect::HighlightGroup::FunctionParam),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: name_space,
             group: None,
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: colon_space,
             group: None,
         },
@@ -149,11 +149,11 @@ fn return_type(s: &str) -> ParseResult<'_> {
     let (s, mut ty) = crate::ty(s)?;
 
     let mut output = vec![
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: arrow,
-            group: Some(syntax::HighlightGroup::Separator),
+            group: Some(dialect::HighlightGroup::Separator),
         },
-        syntax::HighlightedSpan {
+        dialect::HighlightedSpan {
             text: arrow_space,
             group: None,
         },

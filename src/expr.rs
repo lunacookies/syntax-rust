@@ -48,9 +48,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
 
 fn boolean(s: &str) -> ParseResult<'_> {
     map(alt((tag("true"), tag("false"))), |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::Boolean),
+            group: Some(dialect::HighlightGroup::Boolean),
         }]
     })(s)
 }

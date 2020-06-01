@@ -5,9 +5,9 @@ use {
 
 pub(crate) fn parse(s: &str) -> ParseResult<'_> {
     map(snake_case, |s| {
-        vec![syntax::HighlightedSpan {
+        vec![dialect::HighlightedSpan {
             text: s,
-            group: Some(syntax::HighlightGroup::ModuleUse),
+            group: Some(dialect::HighlightGroup::ModuleUse),
         }]
     })(s)
 }

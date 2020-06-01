@@ -12,11 +12,11 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
         let (s, ref_space) = take_whitespace1(s)?;
 
         let output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: ref_,
-                group: Some(syntax::HighlightGroup::OtherKeyword),
+                group: Some(dialect::HighlightGroup::OtherKeyword),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: ref_space,
                 group: None,
             },
@@ -30,11 +30,11 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
         let (s, mut_space) = take_whitespace1(s)?;
 
         let output = vec![
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: mut_,
-                group: Some(syntax::HighlightGroup::OtherKeyword),
+                group: Some(dialect::HighlightGroup::OtherKeyword),
             },
-            syntax::HighlightedSpan {
+            dialect::HighlightedSpan {
                 text: mut_space,
                 group: None,
             },
@@ -51,9 +51,9 @@ pub(crate) fn parse(s: &str) -> ParseResult<'_> {
         output.append(&mut mut_);
     }
 
-    output.push(syntax::HighlightedSpan {
+    output.push(dialect::HighlightedSpan {
         text: name,
-        group: Some(syntax::HighlightGroup::VariableDef),
+        group: Some(dialect::HighlightGroup::VariableDef),
     });
 
     Ok((s, output))
