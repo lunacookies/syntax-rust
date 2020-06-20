@@ -8,12 +8,15 @@ pub(crate) fn parse(s: &str) -> ParserOutput<'_> {
         return Ok(("", vec![]));
     }
 
-    map(take_while(|c| c == ' ' || c == '\t' || c == '\n'), |s| {
-        vec![HighlightedSpan {
-            text: s,
-            group: None,
-        }]
-    })(s)
+    map(
+        take_while(|c| c == ' ' || c == '\t' || c == '\n' || c == '\r'),
+        |s| {
+            vec![HighlightedSpan {
+                text: s,
+                group: None,
+            }]
+        },
+    )(s)
 }
 
 #[cfg(test)]
@@ -61,6 +64,20 @@ mod tests {
                 "",
                 vec![HighlightedSpan {
                     text: "\n\n\n",
+                    group: None
+                }]
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_carriage_returns() {
+        assert_eq!(
+            parse("\r\r"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "\r\r",
                     group: None
                 }]
             ))
