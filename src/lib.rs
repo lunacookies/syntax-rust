@@ -4,6 +4,7 @@
 
 use nom::multi::many0;
 
+mod ident;
 mod parser;
 mod type_;
 
