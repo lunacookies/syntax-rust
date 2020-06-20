@@ -1,11 +1,11 @@
-use crate::ParserOutput;
+use crate::{camel_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn type_(s: &str) -> ParserOutput<'_> {
-    alt((number_type, bool_type, str_type))(s)
+    alt((number_type, bool_type, str_type, non_primitive_type))(s)
 }
 
 fn number_type(s: &str) -> ParserOutput<'_> {
@@ -49,6 +49,15 @@ fn str_type(s: &str) -> ParserOutput<'_> {
         vec![HighlightedSpan {
             text: s,
             group: Some(HighlightGroup::PrimitiveTy),
+        }]
+    })(s)
+}
+
+fn non_primitive_type(s: &str) -> ParserOutput<'_> {
+    map(camel_case, |s| {
+        vec![HighlightedSpan {
+            text: s,
+            group: Some(HighlightGroup::TyUse),
         }]
     })(s)
 }
@@ -108,6 +117,20 @@ mod tests {
                 vec![HighlightedSpan {
                     text: "str",
                     group: Some(HighlightGroup::PrimitiveTy)
+                }]
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_non_primitive_type() {
+        assert_eq!(
+            type_("String"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "String",
+                    group: Some(HighlightGroup::TyUse)
                 }]
             ))
         );
