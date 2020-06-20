@@ -8,9 +8,9 @@ pub(crate) fn parse(s: &str) -> ParserOutput<'_> {
         return Ok(("", vec![]));
     }
 
-    map(take_while(|c| c == ' '), |spaces| {
+    map(take_while(|c| c == ' ' || c == '\t'), |s| {
         vec![HighlightedSpan {
-            text: spaces,
+            text: s,
             group: None,
         }]
     })(s)
@@ -36,6 +36,20 @@ mod tests {
                     group: None
                 }]
             ))
-        )
+        );
+    }
+
+    #[test]
+    fn parse_tabs() {
+        assert_eq!(
+            parse("\t\t"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "\t\t",
+                    group: None
+                }]
+            ))
+        );
     }
 }
