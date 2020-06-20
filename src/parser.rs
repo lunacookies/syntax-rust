@@ -8,7 +8,7 @@ pub(crate) fn parse(s: &str) -> ParserOutput<'_> {
         return Ok(("", vec![]));
     }
 
-    map(take_while(|c| c == ' ' || c == '\t'), |s| {
+    map(take_while(|c| c == ' ' || c == '\t' || c == '\n'), |s| {
         vec![HighlightedSpan {
             text: s,
             group: None,
@@ -47,6 +47,20 @@ mod tests {
                 "",
                 vec![HighlightedSpan {
                     text: "\t\t",
+                    group: None
+                }]
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_line_feeds() {
+        assert_eq!(
+            parse("\n\n\n"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "\n\n\n",
                     group: None
                 }]
             ))
