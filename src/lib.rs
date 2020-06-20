@@ -5,6 +5,9 @@
 use nom::multi::many0;
 
 mod parser;
+mod type_;
+
+pub(crate) use type_::type_;
 
 #[derive(Debug)]
 pub struct RustHighlighter;
