@@ -8,6 +8,7 @@ mod ident;
 mod parser;
 mod type_;
 
+pub(crate) use ident::snake_case;
 pub(crate) use type_::type_;
 
 #[derive(Debug)]
