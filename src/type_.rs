@@ -5,12 +5,34 @@ use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn type_(s: &str) -> ParserOutput<'_> {
-    map(alt((tag("u32"), tag("i32"))), |s| {
-        vec![HighlightedSpan {
-            text: s,
-            group: Some(HighlightGroup::PrimitiveTy),
-        }]
-    })(s)
+    number_type(s)
+}
+
+fn number_type(s: &str) -> ParserOutput<'_> {
+    map(
+        alt((
+            tag("u8"),
+            tag("u16"),
+            tag("u32"),
+            tag("u64"),
+            tag("u128"),
+            tag("usize"),
+            tag("i8"),
+            tag("i16"),
+            tag("i32"),
+            tag("i64"),
+            tag("i128"),
+            tag("isize"),
+            tag("f32"),
+            tag("f64"),
+        )),
+        |s| {
+            vec![HighlightedSpan {
+                text: s,
+                group: Some(HighlightGroup::PrimitiveTy),
+            }]
+        },
+    )(s)
 }
 
 #[cfg(test)]
