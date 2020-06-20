@@ -5,7 +5,7 @@ use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn type_(s: &str) -> ParserOutput<'_> {
-    alt((number_type, bool_type))(s)
+    alt((number_type, bool_type, str_type))(s)
 }
 
 fn number_type(s: &str) -> ParserOutput<'_> {
@@ -37,6 +37,15 @@ fn number_type(s: &str) -> ParserOutput<'_> {
 
 fn bool_type(s: &str) -> ParserOutput<'_> {
     map(tag("bool"), |s| {
+        vec![HighlightedSpan {
+            text: s,
+            group: Some(HighlightGroup::PrimitiveTy),
+        }]
+    })(s)
+}
+
+fn str_type(s: &str) -> ParserOutput<'_> {
+    map(tag("str"), |s| {
         vec![HighlightedSpan {
             text: s,
             group: Some(HighlightGroup::PrimitiveTy),
@@ -84,6 +93,20 @@ mod tests {
                 "",
                 vec![HighlightedSpan {
                     text: "bool",
+                    group: Some(HighlightGroup::PrimitiveTy)
+                }]
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_str() {
+        assert_eq!(
+            type_("str"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "str",
                     group: Some(HighlightGroup::PrimitiveTy)
                 }]
             ))
