@@ -6,6 +6,7 @@ use nom::multi::many0;
 
 mod expr;
 mod ident;
+mod number;
 mod parser;
 mod type_;
 
@@ -13,6 +14,7 @@ pub(crate) use expr::expr;
 pub(crate) use ident::camel_case;
 pub(crate) use ident::screaming_snake_case;
 pub(crate) use ident::snake_case;
+pub(crate) use number::binary;
 pub(crate) use type_::type_;
 
 #[derive(Debug)]
