@@ -1,11 +1,11 @@
-use crate::{decimal, hexadecimal, octal, snake_case, ParserOutput};
+use crate::{binary, decimal, hexadecimal, octal, snake_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn expr(s: &str) -> ParserOutput<'_> {
-    alt((hexadecimal_lit, octal_lit, decimal_lit, var))(s)
+    alt((hexadecimal_lit, octal_lit, binary_lit, decimal_lit, var))(s)
 }
 
 fn hexadecimal_lit(s: &str) -> ParserOutput<'_> {
@@ -14,6 +14,10 @@ fn hexadecimal_lit(s: &str) -> ParserOutput<'_> {
 
 fn octal_lit(s: &str) -> ParserOutput<'_> {
     number("0o", octal, s)
+}
+
+fn binary_lit(s: &str) -> ParserOutput<'_> {
+    number("0b", binary, s)
 }
 
 fn decimal_lit(s: &str) -> ParserOutput<'_> {
@@ -103,6 +107,26 @@ mod tests {
                     },
                     HighlightedSpan {
                         text: "1234567",
+                        group: Some(HighlightGroup::Number),
+                    },
+                ],
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_binary_literal() {
+        assert_eq!(
+            expr("0b010101"),
+            Ok((
+                "",
+                vec![
+                    HighlightedSpan {
+                        text: "0b",
+                        group: Some(HighlightGroup::Number),
+                    },
+                    HighlightedSpan {
+                        text: "010101",
                         group: Some(HighlightGroup::Number),
                     },
                 ],
