@@ -1,11 +1,15 @@
-use crate::{decimal, octal, snake_case, ParserOutput};
+use crate::{decimal, hexadecimal, octal, snake_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn expr(s: &str) -> ParserOutput<'_> {
-    alt((octal_lit, decimal_lit, var))(s)
+    alt((hexadecimal_lit, octal_lit, decimal_lit, var))(s)
+}
+
+fn hexadecimal_lit(s: &str) -> ParserOutput<'_> {
+    number("0x", hexadecimal, s)
 }
 
 fn octal_lit(s: &str) -> ParserOutput<'_> {
@@ -61,7 +65,27 @@ mod tests {
                 vec![HighlightedSpan {
                     text: "foobar",
                     group: Some(HighlightGroup::VariableUse),
-                }]
+                }],
+            ))
+        );
+    }
+
+    #[test]
+    fn parse_hexadecimal_literal() {
+        assert_eq!(
+            expr("0xDEADBEEF"),
+            Ok((
+                "",
+                vec![
+                    HighlightedSpan {
+                        text: "0x",
+                        group: Some(HighlightGroup::Number),
+                    },
+                    HighlightedSpan {
+                        text: "DEADBEEF",
+                        group: Some(HighlightGroup::Number)
+                    },
+                ],
             ))
         );
     }
@@ -80,8 +104,8 @@ mod tests {
                     HighlightedSpan {
                         text: "1234567",
                         group: Some(HighlightGroup::Number),
-                    }
-                ]
+                    },
+                ],
             ))
         );
     }
@@ -103,8 +127,8 @@ mod tests {
                     HighlightedSpan {
                         text: "123456789",
                         group: Some(HighlightGroup::Number),
-                    }
-                ]
+                    },
+                ],
             ))
         );
     }
