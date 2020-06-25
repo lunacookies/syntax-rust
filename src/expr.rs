@@ -1,4 +1,4 @@
-use crate::{octal, snake_case, ParserOutput};
+use crate::{decimal, octal, snake_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -9,7 +9,7 @@ pub(crate) fn expr(s: &str) -> ParserOutput<'_> {
 }
 
 fn number(s: &str) -> ParserOutput<'_> {
-    octal_lit(s)
+    alt((octal_lit, decimal_lit))(s)
 }
 
 fn octal_lit(s: &str) -> ParserOutput<'_> {
@@ -29,6 +29,15 @@ fn octal_lit(s: &str) -> ParserOutput<'_> {
             },
         ],
     ))
+}
+
+fn decimal_lit(s: &str) -> ParserOutput<'_> {
+    map(decimal, |s| {
+        vec![HighlightedSpan {
+            text: s,
+            group: Some(HighlightGroup::Number),
+        }]
+    })(s)
 }
 
 fn var(s: &str) -> ParserOutput<'_> {
@@ -75,6 +84,20 @@ mod tests {
                     }
                 ]
             ))
-        )
+        );
+    }
+
+    #[test]
+    fn parse_decimal_literal() {
+        assert_eq!(
+            expr("123456789"),
+            Ok((
+                "",
+                vec![HighlightedSpan {
+                    text: "123456789",
+                    group: Some(HighlightGroup::Number)
+                }]
+            ))
+        );
     }
 }
