@@ -12,7 +12,7 @@ mod type_;
 
 pub(crate) use expr::expr;
 pub(crate) use ident::{camel_case, screaming_snake_case, snake_case};
-pub(crate) use number::{binary, decimal, octal};
+pub(crate) use number::{binary, decimal, hexadecimal, octal};
 pub(crate) use type_::type_;
 
 #[derive(Debug)]
