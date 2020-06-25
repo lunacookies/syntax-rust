@@ -1,9 +1,34 @@
-use crate::{snake_case, ParserOutput};
+use crate::{octal, snake_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
+use nom::branch::alt;
+use nom::bytes::complete::tag;
 use nom::combinator::map;
 
 pub(crate) fn expr(s: &str) -> ParserOutput<'_> {
-    var(s)
+    alt((number, var))(s)
+}
+
+fn number(s: &str) -> ParserOutput<'_> {
+    octal_lit(s)
+}
+
+fn octal_lit(s: &str) -> ParserOutput<'_> {
+    let (s, prefix) = tag("0o")(s)?;
+    let (s, digits) = octal(s)?;
+
+    Ok((
+        s,
+        vec![
+            HighlightedSpan {
+                text: prefix,
+                group: Some(HighlightGroup::Number),
+            },
+            HighlightedSpan {
+                text: digits,
+                group: Some(HighlightGroup::Number),
+            },
+        ],
+    ))
 }
 
 fn var(s: &str) -> ParserOutput<'_> {
@@ -31,5 +56,25 @@ mod tests {
                 }]
             ))
         );
+    }
+
+    #[test]
+    fn parse_octal_literal() {
+        assert_eq!(
+            expr("0o1234567"),
+            Ok((
+                "",
+                vec![
+                    HighlightedSpan {
+                        text: "0o",
+                        group: Some(HighlightGroup::Number)
+                    },
+                    HighlightedSpan {
+                        text: "1234567",
+                        group: Some(HighlightGroup::Number)
+                    }
+                ]
+            ))
+        )
     }
 }
