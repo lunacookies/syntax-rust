@@ -1,7 +1,7 @@
 use nom::bytes::complete::take_while1;
 
 pub(crate) fn octal(s: &str) -> nom::IResult<&str, &str> {
-    take_while1(|c| c >= '0' && c < '8')(s)
+    take_while1(|c| ('0'..'8').contains(&c))(s)
 }
 
 #[cfg(test)]
