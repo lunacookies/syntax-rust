@@ -11,9 +11,7 @@ mod parser;
 mod type_;
 
 pub(crate) use expr::expr;
-pub(crate) use ident::camel_case;
-pub(crate) use ident::screaming_snake_case;
-pub(crate) use ident::snake_case;
+pub(crate) use ident::{camel_case, screaming_snake_case, snake_case};
 pub(crate) use number::{binary, decimal};
 pub(crate) use type_::type_;
 
