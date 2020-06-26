@@ -4,6 +4,8 @@ use logos::Logos;
 enum Token {
     #[regex("_?[A-Z][A-Za-z0-9]*")]
     Type,
+    #[regex("_?[a-z][a-z0-9_]*")]
+    Ident,
     #[error]
     #[regex("[ \t\n\r]", logos::skip)]
     Error,
@@ -55,5 +57,24 @@ mod tests {
         let mut lexer = Token::lexer("_Unused123Type");
         assert_eq!(lexer.next(), Some(Token::Type));
         assert_eq!(lexer.slice(), "_Unused123Type");
+    }
+
+    #[test]
+    fn idents_are_snake_case() {
+        let mut lexer = Token::lexer("snake_123_case");
+        assert_eq!(lexer.next(), Some(Token::Ident));
+        assert_eq!(lexer.slice(), "snake_123_case");
+    }
+
+    #[test]
+    fn idents_cannot_start_with_number() {
+        assert_ne!(Token::lexer("123ident").next(), Some(Token::Ident));
+    }
+
+    #[test]
+    fn idents_can_start_with_an_underscore() {
+        let mut lexer = Token::lexer("_unused_ident");
+        assert_eq!(lexer.next(), Some(Token::Ident));
+        assert_eq!(lexer.slice(), "_unused_ident");
     }
 }
