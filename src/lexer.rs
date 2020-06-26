@@ -3,7 +3,7 @@ use logos::Logos;
 #[derive(Debug, PartialEq, Logos)]
 enum Token {
     #[error]
-    #[regex("[ \t]", logos::skip)]
+    #[regex("[ \t\n]", logos::skip)]
     Error,
 }
 
@@ -24,5 +24,10 @@ mod tests {
     #[test]
     fn skips_tabs() {
         assert_eq!(Token::lexer("\t\t\t").count(), 0);
+    }
+
+    #[test]
+    fn skips_line_feeds() {
+        assert_eq!(Token::lexer("\n\n\n\n").count(), 0);
     }
 }
