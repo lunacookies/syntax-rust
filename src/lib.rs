@@ -13,7 +13,7 @@ mod type_;
 pub(crate) use expr::expr;
 pub(crate) use ident::{camel_case, screaming_snake_case, snake_case};
 pub(crate) use number::{binary, decimal, hexadecimal, octal};
-pub(crate) use type_::type_;
+pub(crate) use type_::{number_type, type_};
 
 #[derive(Debug)]
 pub struct RustHighlighter;

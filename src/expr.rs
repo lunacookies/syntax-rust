@@ -2,7 +2,7 @@ use crate::{binary, decimal, hexadecimal, octal, snake_case, ParserOutput};
 use dialect::{HighlightGroup, HighlightedSpan};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::combinator::map;
+use nom::combinator::{map, opt};
 
 pub(crate) fn expr(s: &str) -> ParserOutput<'_> {
     alt((hexadecimal_lit, octal_lit, binary_lit, decimal_lit, var))(s)
@@ -31,20 +31,24 @@ fn number<'a>(
 ) -> ParserOutput<'a> {
     let (s, prefix) = tag(prefix)(s)?;
     let (s, digits) = digits(s)?;
+    let (s, type_suffix) = opt(crate::number_type)(s)?;
 
-    Ok((
-        s,
-        vec![
-            HighlightedSpan {
-                text: prefix,
-                group: Some(HighlightGroup::Number),
-            },
-            HighlightedSpan {
-                text: digits,
-                group: Some(HighlightGroup::Number),
-            },
-        ],
-    ))
+    let mut output = vec![
+        HighlightedSpan {
+            text: prefix,
+            group: Some(HighlightGroup::Number),
+        },
+        HighlightedSpan {
+            text: digits,
+            group: Some(HighlightGroup::Number),
+        },
+    ];
+
+    if let Some(mut type_suffix) = type_suffix {
+        output.append(&mut type_suffix);
+    }
+
+    Ok((s, output))
 }
 
 fn var(s: &str) -> ParserOutput<'_> {
@@ -155,5 +159,29 @@ mod tests {
                 ],
             ))
         );
+    }
+
+    #[test]
+    fn parse_number_literal_with_type_suffix() {
+        assert_eq!(
+            expr("0x123u16"),
+            Ok((
+                "",
+                vec![
+                    HighlightedSpan {
+                        text: "0x",
+                        group: Some(HighlightGroup::Number),
+                    },
+                    HighlightedSpan {
+                        text: "123",
+                        group: Some(HighlightGroup::Number),
+                    },
+                    HighlightedSpan {
+                        text: "u16",
+                        group: Some(HighlightGroup::PrimitiveTy),
+                    },
+                ],
+            ))
+        )
     }
 }

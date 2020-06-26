@@ -8,7 +8,7 @@ pub(crate) fn type_(s: &str) -> ParserOutput<'_> {
     alt((number_type, bool_type, str_type, non_primitive_type))(s)
 }
 
-fn number_type(s: &str) -> ParserOutput<'_> {
+pub(crate) fn number_type(s: &str) -> ParserOutput<'_> {
     map(
         alt((
             tag("u8"),
