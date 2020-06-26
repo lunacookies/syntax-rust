@@ -1,5 +1,16 @@
 use logos::Logos;
 
+pub(crate) fn lex(s: &str) -> Vec<Token> {
+    let mut tokens: Vec<_> = TokenKind::lexer(s)
+        .spanned()
+        .map(|(kind, range)| Token { kind, range })
+        .collect();
+
+    tokens.reverse();
+
+    tokens
+}
+
 pub(crate) struct Token {
     pub(crate) kind: TokenKind,
     pub(crate) range: std::ops::Range<usize>,
