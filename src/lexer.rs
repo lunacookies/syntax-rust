@@ -20,7 +20,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn lex_nothing() {
+    fn lexes_nothing() {
         assert_eq!(Token::lexer("").count(), 0);
     }
 
@@ -102,7 +102,7 @@ mod tests {
     }
 
     #[test]
-    fn lex_thin_arrow() {
+    fn lexes_thin_arrow() {
         let mut lexer = Token::lexer("->");
         assert_eq!(lexer.next(), Some(Token::ThinArrow));
         assert_eq!(lexer.slice(), "->");
