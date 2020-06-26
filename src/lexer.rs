@@ -6,6 +6,8 @@ enum Token {
     Type,
     #[regex("_?[a-z][a-z0-9_]*")]
     Ident,
+    #[regex("'_?[a-z][a-z0-9_]*")]
+    Lifetime,
     #[error]
     #[regex("[ \t\n\r]", logos::skip)]
     Error,
@@ -76,5 +78,24 @@ mod tests {
         let mut lexer = Token::lexer("_unused_ident");
         assert_eq!(lexer.next(), Some(Token::Ident));
         assert_eq!(lexer.slice(), "_unused_ident");
+    }
+
+    #[test]
+    fn lifetimes_are_snake_case_with_quote() {
+        let mut lexer = Token::lexer("'snake_case");
+        assert_eq!(lexer.next(), Some(Token::Lifetime));
+        assert_eq!(lexer.slice(), "'snake_case");
+    }
+
+    #[test]
+    fn lifetimes_cannot_start_with_number() {
+        assert_ne!(Token::lexer("'123lifetime").next(), Some(Token::Lifetime));
+    }
+
+    #[test]
+    fn lifetimes_can_start_with_an_underscore() {
+        let mut lexer = Token::lexer("'_unused_lifetime");
+        assert_eq!(lexer.next(), Some(Token::Lifetime));
+        assert_eq!(lexer.slice(), "'_unused_lifetime");
     }
 }
