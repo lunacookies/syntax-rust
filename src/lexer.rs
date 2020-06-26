@@ -2,6 +2,8 @@ use logos::Logos;
 
 #[derive(Debug, PartialEq, Logos)]
 enum Token {
+    #[token("fn")]
+    Fn,
     #[regex("_?[A-Z][A-Za-z0-9]*")]
     Type,
     #[regex("_?[a-z][a-z0-9_]*")]
@@ -42,6 +44,13 @@ mod tests {
     #[test]
     fn skips_carriage_returns() {
         assert_eq!(Token::lexer("\r\r").count(), 0);
+    }
+
+    #[test]
+    fn lexes_fn() {
+        let mut lexer = Token::lexer("fn");
+        assert_eq!(lexer.next(), Some(Token::Fn));
+        assert_eq!(lexer.slice(), "fn");
     }
 
     #[test]
