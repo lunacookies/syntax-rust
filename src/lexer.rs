@@ -8,6 +8,8 @@ enum Token {
     Ident,
     #[regex("'_?[a-z][a-z0-9_]*")]
     Lifetime,
+    #[token("->")]
+    ThinArrow,
     #[error]
     #[regex("[ \t\n\r]", logos::skip)]
     Error,
@@ -97,5 +99,12 @@ mod tests {
         let mut lexer = Token::lexer("'_unused_lifetime");
         assert_eq!(lexer.next(), Some(Token::Lifetime));
         assert_eq!(lexer.slice(), "'_unused_lifetime");
+    }
+
+    #[test]
+    fn lex_thin_arrow() {
+        let mut lexer = Token::lexer("->");
+        assert_eq!(lexer.next(), Some(Token::ThinArrow));
+        assert_eq!(lexer.slice(), "->");
     }
 }
