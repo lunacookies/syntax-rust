@@ -10,5 +10,5 @@ homepage = "https://github.com/arzg/syntax-rust"
 repository = "https://github.com/arzg/syntax-rust"
 
 [dependencies]
-dialect = "0.1"
-nom = "5"
+dialect = "0.2"
+logos = "0.11"
