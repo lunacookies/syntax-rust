@@ -4,5 +4,7 @@
 
 mod lexer;
 
+use lexer::{lex, Token, TokenKind};
+
 #[derive(Debug)]
 pub struct RustHighlighter;
