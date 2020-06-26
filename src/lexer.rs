@@ -1,5 +1,10 @@
 use logos::Logos;
 
+pub(crate) struct Token {
+    pub(crate) kind: TokenKind,
+    pub(crate) range: std::ops::Range<usize>,
+}
+
 #[derive(Debug, PartialEq, Logos)]
 pub(crate) enum TokenKind {
     #[token("fn")]
