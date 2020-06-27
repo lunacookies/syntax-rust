@@ -27,6 +27,10 @@ pub(crate) enum TokenKind {
     Ident,
     #[regex("'_?[a-z][a-z0-9_]*")]
     Lifetime,
+    #[token("(")]
+    OpenParen,
+    #[token(")")]
+    CloseParen,
     #[token("->")]
     ThinArrow,
     #[error]
@@ -131,6 +135,20 @@ mod tests {
         let mut lexer = TokenKind::lexer("'_unused_lifetime");
         assert_eq!(lexer.next(), Some(TokenKind::Lifetime));
         assert_eq!(lexer.slice(), "'_unused_lifetime");
+    }
+
+    #[test]
+    fn lexes_open_paren() {
+        let mut lexer = TokenKind::lexer("(");
+        assert_eq!(lexer.next(), Some(TokenKind::OpenParen));
+        assert_eq!(lexer.slice(), "(");
+    }
+
+    #[test]
+    fn lexes_close_paren() {
+        let mut lexer = TokenKind::lexer(")");
+        assert_eq!(lexer.next(), Some(TokenKind::CloseParen));
+        assert_eq!(lexer.slice(), ")");
     }
 
     #[test]
