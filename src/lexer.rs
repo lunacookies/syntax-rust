@@ -35,6 +35,8 @@ pub(crate) enum TokenKind {
     OpenBrace,
     #[token("}")]
     CloseBrace,
+    #[token("::")]
+    DoubleColon,
     #[token("->")]
     ThinArrow,
     #[error]
@@ -168,6 +170,13 @@ mod tests {
         let mut lexer = TokenKind::lexer("}");
         assert_eq!(lexer.next(), Some(TokenKind::CloseBrace));
         assert_eq!(lexer.slice(), "}");
+    }
+
+    #[test]
+    fn lexes_double_colon() {
+        let mut lexer = TokenKind::lexer("::");
+        assert_eq!(lexer.next(), Some(TokenKind::DoubleColon));
+        assert_eq!(lexer.slice(), "::");
     }
 
     #[test]
