@@ -1,12 +1,12 @@
 use dialect::{HighlightGroup, HighlightedSpan};
 
-struct Parser {
+pub(crate) struct Parser {
     tokens: Vec<crate::Token>,
     output: Vec<HighlightedSpan>,
 }
 
 impl Parser {
-    fn new(s: &str) -> Self {
+    pub(crate) fn new(s: &str) -> Self {
         let tokens = crate::lex(s);
         let output = Vec::with_capacity(tokens.len());
 
@@ -21,7 +21,7 @@ impl Parser {
         self.tokens.last()
     }
 
-    fn parse(mut self) -> Vec<HighlightedSpan> {
+    pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
         if let Some(token) = self.next() {
             match token.kind {
                 crate::TokenKind::Fn => {
