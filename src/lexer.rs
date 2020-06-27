@@ -41,6 +41,7 @@ pub(crate) enum TokenKind {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::{assert_eq, assert_ne};
 
     #[test]
     fn lexes_nothing() {
