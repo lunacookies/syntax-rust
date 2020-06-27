@@ -23,7 +23,7 @@ impl Parser {
     }
 
     pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
-        if let Some(token) = self.next() {
+        while let Some(token) = self.next() {
             match token.kind {
                 crate::TokenKind::Fn => {
                     self.output.push(HighlightedSpan {
@@ -72,6 +72,31 @@ mod tests {
                 },
                 HighlightedSpan {
                     range: 3..13,
+                    group: HighlightGroup::FunctionDef,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_multiple_fn_defs() {
+        assert_eq!(
+            Parser::new("fn foo fn bar").parse(),
+            vec![
+                HighlightedSpan {
+                    range: 0..2,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 3..6,
+                    group: HighlightGroup::FunctionDef,
+                },
+                HighlightedSpan {
+                    range: 7..9,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 10..13,
                     group: HighlightGroup::FunctionDef,
                 },
             ],
