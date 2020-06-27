@@ -59,6 +59,8 @@ impl Parser {
 
     fn parse_fn_def(&mut self) {
         self.push(crate::TokenKind::Ident, HighlightGroup::FunctionDef);
+        self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
+        self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
     }
 }
 
@@ -69,7 +71,7 @@ mod tests {
     #[test]
     fn parses_fn_def() {
         assert_eq!(
-            Parser::new("fn frobnicate").parse(),
+            Parser::new("fn frobnicate()").parse(),
             vec![
                 HighlightedSpan {
                     range: 0..2,
@@ -79,6 +81,14 @@ mod tests {
                     range: 3..13,
                     group: HighlightGroup::FunctionDef,
                 },
+                HighlightedSpan {
+                    range: 13..14,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 14..15,
+                    group: HighlightGroup::Delimiter,
+                },
             ],
         );
     }
@@ -86,7 +96,7 @@ mod tests {
     #[test]
     fn parses_multiple_fn_defs() {
         assert_eq!(
-            Parser::new("fn foo fn bar").parse(),
+            Parser::new("fn foo() fn bar()").parse(),
             vec![
                 HighlightedSpan {
                     range: 0..2,
@@ -97,12 +107,28 @@ mod tests {
                     group: HighlightGroup::FunctionDef,
                 },
                 HighlightedSpan {
-                    range: 7..9,
+                    range: 6..7,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 7..8,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 9..11,
                     group: HighlightGroup::OtherKeyword,
                 },
                 HighlightedSpan {
-                    range: 10..13,
+                    range: 12..15,
                     group: HighlightGroup::FunctionDef,
+                },
+                HighlightedSpan {
+                    range: 15..16,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 16..17,
+                    group: HighlightGroup::Delimiter,
                 },
             ],
         );
