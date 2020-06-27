@@ -1,6 +1,7 @@
 use dialect::{HighlightGroup, HighlightedSpan};
 
-pub(crate) struct Parser {
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub struct Parser {
     tokens: Vec<crate::Token>,
     output: Vec<HighlightedSpan>,
 }
@@ -53,6 +54,12 @@ impl Parser {
                 group,
             });
         }
+    }
+}
+
+impl dialect::Highlight for Parser {
+    fn highlight(&self, input: &str) -> Vec<dialect::HighlightedSpan> {
+        Parser::new(input).parse()
     }
 }
 
