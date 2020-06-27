@@ -6,4 +6,13 @@ mod lexer;
 mod parser;
 
 use lexer::{lex, Token, TokenKind};
-pub use parser::Parser;
+use parser::Parser;
+
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
+pub struct Highlighter;
+
+impl dialect::Highlight for Highlighter {
+    fn highlight(&self, input: &str) -> Vec<dialect::HighlightedSpan> {
+        Parser::new(input).parse()
+    }
+}
