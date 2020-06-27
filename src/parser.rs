@@ -1,9 +1,17 @@
 use dialect::{HighlightGroup, HighlightedSpan};
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct Parser {
+#[derive(Debug)]
+pub(crate) struct Parser {
     tokens: Vec<crate::Token>,
     output: Vec<HighlightedSpan>,
+}
+
+impl Iterator for Parser {
+    type Item = crate::Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.tokens.pop()
+    }
 }
 
 impl Parser {
@@ -12,14 +20,6 @@ impl Parser {
         let output = Vec::with_capacity(tokens.len());
 
         Self { tokens, output }
-    }
-
-    fn next(&mut self) -> Option<crate::Token> {
-        self.tokens.pop()
-    }
-
-    fn peek(&self) -> Option<&crate::Token> {
-        self.tokens.last()
     }
 
     pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
@@ -54,12 +54,6 @@ impl Parser {
                 group,
             });
         }
-    }
-}
-
-impl dialect::Highlight for Parser {
-    fn highlight(&self, input: &str) -> Vec<dialect::HighlightedSpan> {
-        Parser::new(input).parse()
     }
 }
 
