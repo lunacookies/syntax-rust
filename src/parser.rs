@@ -6,20 +6,20 @@ pub(crate) struct Parser {
     output: Vec<HighlightedSpan>,
 }
 
-impl Iterator for Parser {
-    type Item = crate::Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.tokens.pop()
-    }
-}
-
 impl Parser {
     pub(crate) fn new(s: &str) -> Self {
         let tokens = crate::lex(s);
         let output = Vec::with_capacity(tokens.len());
 
         Self { tokens, output }
+    }
+
+    fn next(&mut self) -> Option<crate::Token> {
+        self.tokens.pop()
+    }
+
+    fn peek(&self) -> Option<&crate::Token> {
+        self.tokens.last()
     }
 
     fn push(&mut self, kind: crate::TokenKind, group: HighlightGroup) {
@@ -61,6 +61,36 @@ impl Parser {
         self.push(crate::TokenKind::Ident, HighlightGroup::FunctionDef);
         self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
         self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
+
+        if let Some(crate::Token {
+            kind: crate::TokenKind::ThinArrow,
+            ..
+        }) = self.peek()
+        {
+            let thin_arrow = self.next().unwrap();
+
+            if let Some(crate::Token {
+                kind: crate::TokenKind::Type,
+                ..
+            }) = self.peek()
+            {
+                let type_ = self.next().unwrap();
+                self.output.push(HighlightedSpan {
+                    range: thin_arrow.range,
+                    group: HighlightGroup::Separator,
+                });
+                self.output.push(HighlightedSpan {
+                    range: type_.range,
+                    group: HighlightGroup::TyUse,
+                });
+            } else {
+                // If we don’t have a type after the arrow, then the arrow is parsed as an error.
+                self.output.push(HighlightedSpan {
+                    range: thin_arrow.range,
+                    group: HighlightGroup::Error,
+                });
+            }
+        }
     }
 }
 
@@ -130,6 +160,68 @@ mod tests {
                 HighlightedSpan {
                     range: 16..17,
                     group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_fn_def_with_return_type() {
+        assert_eq!(
+            Parser::new("fn f() -> T").parse(),
+            vec![
+                HighlightedSpan {
+                    range: 0..2,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 3..4,
+                    group: HighlightGroup::FunctionDef,
+                },
+                HighlightedSpan {
+                    range: 4..5,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 5..6,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 7..9,
+                    group: HighlightGroup::Separator,
+                },
+                HighlightedSpan {
+                    range: 10..11,
+                    group: HighlightGroup::TyUse
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn return_type_arrow_without_type_is_error() {
+        assert_eq!(
+            Parser::new("fn f() ->").parse(),
+            vec![
+                HighlightedSpan {
+                    range: 0..2,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 3..4,
+                    group: HighlightGroup::FunctionDef,
+                },
+                HighlightedSpan {
+                    range: 4..5,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 5..6,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 7..9,
+                    group: HighlightGroup::Error,
                 },
             ],
         );
