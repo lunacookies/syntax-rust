@@ -92,6 +92,21 @@ impl Parser {
             }
         }
     }
+
+    fn parse_expr(&mut self) {
+        if let Some(crate::Token {
+            kind: crate::TokenKind::Ident,
+            ..
+        }) = self.peek()
+        {
+            let var = self.next().unwrap();
+
+            self.output.push(HighlightedSpan {
+                range: var.range,
+                group: HighlightGroup::VariableUse,
+            });
+        }
+    }
 }
 
 #[cfg(test)]
@@ -224,6 +239,20 @@ mod tests {
                     group: HighlightGroup::Error,
                 },
             ],
+        );
+    }
+
+    #[test]
+    fn parses_var_usage() {
+        let mut parser = Parser::new("foo_bar");
+        parser.parse_expr();
+
+        assert_eq!(
+            parser.output,
+            vec![HighlightedSpan {
+                range: 0..7,
+                group: HighlightGroup::VariableUse,
+            }],
         );
     }
 }
