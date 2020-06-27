@@ -11,13 +11,13 @@ pub(crate) fn lex(s: &str) -> Vec<Token> {
     tokens
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub(crate) struct Token {
     pub(crate) kind: TokenKind,
     pub(crate) range: std::ops::Range<usize>,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Logos)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Logos)]
 pub(crate) enum TokenKind {
     #[token("fn")]
     Fn,
