@@ -31,6 +31,10 @@ pub(crate) enum TokenKind {
     OpenParen,
     #[token(")")]
     CloseParen,
+    #[token("{")]
+    OpenBrace,
+    #[token("}")]
+    CloseBrace,
     #[token("->")]
     ThinArrow,
     #[error]
@@ -150,6 +154,20 @@ mod tests {
         let mut lexer = TokenKind::lexer(")");
         assert_eq!(lexer.next(), Some(TokenKind::CloseParen));
         assert_eq!(lexer.slice(), ")");
+    }
+
+    #[test]
+    fn lexes_open_brace() {
+        let mut lexer = TokenKind::lexer("{");
+        assert_eq!(lexer.next(), Some(TokenKind::OpenBrace));
+        assert_eq!(lexer.slice(), "{");
+    }
+
+    #[test]
+    fn lexes_close_brace() {
+        let mut lexer = TokenKind::lexer("}");
+        assert_eq!(lexer.next(), Some(TokenKind::CloseBrace));
+        assert_eq!(lexer.slice(), "}");
     }
 
     #[test]
