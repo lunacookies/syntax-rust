@@ -22,6 +22,21 @@ impl Parser {
         Self { tokens, output }
     }
 
+    fn push(&mut self, kind: crate::TokenKind, group: HighlightGroup) {
+        if let Some(token) = self.next() {
+            let group = if kind == token.kind {
+                group
+            } else {
+                HighlightGroup::Error
+            };
+
+            self.output.push(HighlightedSpan {
+                range: token.range,
+                group,
+            });
+        }
+    }
+
     pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
         while let Some(token) = self.next() {
             match token.kind {
@@ -43,17 +58,7 @@ impl Parser {
     }
 
     fn parse_fn_def(&mut self) {
-        if let Some(token) = self.next() {
-            let group = match token.kind {
-                crate::TokenKind::Ident => HighlightGroup::FunctionDef,
-                _ => HighlightGroup::Error,
-            };
-
-            self.output.push(HighlightedSpan {
-                range: token.range,
-                group,
-            });
-        }
+        self.push(crate::TokenKind::Ident, HighlightGroup::FunctionDef);
     }
 }
 
