@@ -93,6 +93,27 @@ impl Parser {
         }
     }
 
+    fn parse_stmt(&mut self) {
+        match self.peek() {
+            Some(crate::Token {
+                kind: crate::TokenKind::Let,
+                ..
+            }) => {
+                let let_ = self.next().unwrap();
+
+                self.output.push(HighlightedSpan {
+                    range: let_.range,
+                    group: HighlightGroup::OtherKeyword,
+                });
+
+                self.push(crate::TokenKind::Ident, HighlightGroup::VariableDef);
+                self.push(crate::TokenKind::Equals, HighlightGroup::AssignOper);
+                self.parse_expr();
+            }
+            _ => self.parse_expr(),
+        }
+    }
+
     fn parse_expr(&mut self) {
         if let Some(crate::Token {
             kind: crate::TokenKind::Ident,
@@ -120,13 +141,13 @@ impl Parser {
 
                 self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
             } else {
-            self.output.push(HighlightedSpan {
-                range: var.range,
-                group: HighlightGroup::VariableUse,
-            });
+                self.output.push(HighlightedSpan {
+                    range: var.range,
+                    group: HighlightGroup::VariableUse,
+                });
+            }
         }
     }
-}
 }
 
 #[cfg(test)]
@@ -257,6 +278,30 @@ mod tests {
                 HighlightedSpan {
                     range: 7..9,
                     group: HighlightGroup::Error,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_let_statement() {
+        let mut parser = Parser::new("let x = 1;");
+        parser.parse_stmt();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..3,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 4..5,
+                    group: HighlightGroup::VariableDef,
+                },
+                HighlightedSpan {
+                    range: 6..7,
+                    group: HighlightGroup::AssignOper,
                 },
             ],
         );
