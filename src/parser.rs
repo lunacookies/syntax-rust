@@ -106,15 +106,15 @@ impl Parser {
                     group: HighlightGroup::OtherKeyword,
                 });
 
-                self.push(crate::TokenKind::Ident, HighlightGroup::VariableDef);
+                self.parse_expr(true);
                 self.push(crate::TokenKind::Equals, HighlightGroup::AssignOper);
-                self.parse_expr();
+                self.parse_expr(false);
             }
-            _ => self.parse_expr(),
+            _ => self.parse_expr(false),
         }
     }
 
-    fn parse_expr(&mut self) {
+    fn parse_expr(&mut self, is_pattern: bool) {
         if let Some(crate::Token {
             kind: crate::TokenKind::Ident,
             ..
@@ -143,7 +143,11 @@ impl Parser {
             } else {
                 self.output.push(HighlightedSpan {
                     range: var.range,
-                    group: HighlightGroup::VariableUse,
+                    group: if is_pattern {
+                        HighlightGroup::VariableDef
+                    } else {
+                        HighlightGroup::VariableUse
+                    },
                 });
             }
         }
@@ -285,7 +289,7 @@ mod tests {
 
     #[test]
     fn parses_let_statement() {
-        let mut parser = Parser::new("let x = 1;");
+        let mut parser = Parser::new("let x = y;");
         parser.parse_stmt();
 
         assert_eq!(
@@ -303,6 +307,10 @@ mod tests {
                     range: 6..7,
                     group: HighlightGroup::AssignOper,
                 },
+                HighlightedSpan {
+                    range: 8..9,
+                    group: HighlightGroup::VariableUse,
+                },
             ],
         );
     }
@@ -310,7 +318,7 @@ mod tests {
     #[test]
     fn parses_var_usage() {
         let mut parser = Parser::new("foo_bar");
-        parser.parse_expr();
+        parser.parse_expr(false);
 
         assert_eq!(
             parser.output,
@@ -324,7 +332,7 @@ mod tests {
     #[test]
     fn parses_function_call() {
         let mut parser = Parser::new("f()");
-        parser.parse_expr();
+        parser.parse_expr(false);
 
         assert_eq!(
             parser.output,
