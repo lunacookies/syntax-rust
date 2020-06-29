@@ -70,7 +70,7 @@ impl Parser {
             let thin_arrow = self.next().unwrap();
 
             if let Some(crate::Token {
-                kind: crate::TokenKind::Type,
+                kind: crate::TokenKind::TypeIdent,
                 ..
             }) = self.peek()
             {

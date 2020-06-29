@@ -24,11 +24,11 @@ pub(crate) enum TokenKind {
     #[token("let")]
     Let,
     #[regex("_?[A-Z][A-Za-z0-9]*")]
-    Type,
+    TypeIdent,
     #[regex("_?[a-z][a-z0-9_]*")]
     Ident,
     #[regex("'_?[a-z][a-z0-9_]*")]
-    Lifetime,
+    TickIdent,
     #[token("(")]
     OpenParen,
     #[token(")")]
@@ -93,7 +93,7 @@ mod tests {
     #[test]
     fn types_are_pascal_case() {
         let mut lexer = TokenKind::lexer("PascalCase123");
-        assert_eq!(lexer.next(), Some(TokenKind::Type));
+        assert_eq!(lexer.next(), Some(TokenKind::TypeIdent));
         assert_eq!(lexer.slice(), "PascalCase123");
     }
 
@@ -101,14 +101,14 @@ mod tests {
     fn types_cannot_start_with_number() {
         assert_ne!(
             TokenKind::lexer("123NotAType").next(),
-            Some(TokenKind::Type)
+            Some(TokenKind::TypeIdent)
         );
     }
 
     #[test]
     fn types_can_start_with_an_underscore() {
         let mut lexer = TokenKind::lexer("_Unused123Type");
-        assert_eq!(lexer.next(), Some(TokenKind::Type));
+        assert_eq!(lexer.next(), Some(TokenKind::TypeIdent));
         assert_eq!(lexer.slice(), "_Unused123Type");
     }
 
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn lifetimes_are_snake_case_with_quote() {
         let mut lexer = TokenKind::lexer("'snake_case");
-        assert_eq!(lexer.next(), Some(TokenKind::Lifetime));
+        assert_eq!(lexer.next(), Some(TokenKind::TickIdent));
         assert_eq!(lexer.slice(), "'snake_case");
     }
 
@@ -142,14 +142,14 @@ mod tests {
     fn lifetimes_cannot_start_with_number() {
         assert_ne!(
             TokenKind::lexer("'123lifetime").next(),
-            Some(TokenKind::Lifetime)
+            Some(TokenKind::TickIdent)
         );
     }
 
     #[test]
     fn lifetimes_can_start_with_an_underscore() {
         let mut lexer = TokenKind::lexer("'_unused_lifetime");
-        assert_eq!(lexer.next(), Some(TokenKind::Lifetime));
+        assert_eq!(lexer.next(), Some(TokenKind::TickIdent));
         assert_eq!(lexer.slice(), "'_unused_lifetime");
     }
 
