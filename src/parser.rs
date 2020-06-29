@@ -101,12 +101,32 @@ impl Parser {
         {
             let var = self.next().unwrap();
 
+            if let Some(crate::Token {
+                kind: crate::TokenKind::OpenParen,
+                ..
+            }) = self.peek()
+            {
+                self.output.push(HighlightedSpan {
+                    range: var.range,
+                    group: HighlightGroup::FunctionCall,
+                });
+
+                let open_paren = self.next().unwrap();
+
+                self.output.push(HighlightedSpan {
+                    range: open_paren.range,
+                    group: HighlightGroup::Delimiter,
+                });
+
+                self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
+            } else {
             self.output.push(HighlightedSpan {
                 range: var.range,
                 group: HighlightGroup::VariableUse,
             });
         }
     }
+}
 }
 
 #[cfg(test)]
@@ -253,6 +273,30 @@ mod tests {
                 range: 0..7,
                 group: HighlightGroup::VariableUse,
             }],
+        );
+    }
+
+    #[test]
+    fn parses_function_call() {
+        let mut parser = Parser::new("f()");
+        parser.parse_expr();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::FunctionCall,
+                },
+                HighlightedSpan {
+                    range: 1..2,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..3,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
         );
     }
 }
