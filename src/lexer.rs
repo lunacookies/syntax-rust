@@ -37,6 +37,8 @@ pub(crate) enum TokenKind {
     OpenBrace,
     #[token("}")]
     CloseBrace,
+    #[token("=")]
+    Equals,
     #[token("::")]
     DoubleColon,
     #[token("->")]
@@ -179,6 +181,13 @@ mod tests {
         let mut lexer = TokenKind::lexer("}");
         assert_eq!(lexer.next(), Some(TokenKind::CloseBrace));
         assert_eq!(lexer.slice(), "}");
+    }
+
+    #[test]
+    fn lexes_equals() {
+        let mut lexer = TokenKind::lexer("=");
+        assert_eq!(lexer.next(), Some(TokenKind::Equals));
+        assert_eq!(lexer.slice(), "=");
     }
 
     #[test]
