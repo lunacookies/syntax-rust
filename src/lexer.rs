@@ -21,6 +21,8 @@ pub(crate) struct Token {
 pub(crate) enum TokenKind {
     #[token("fn")]
     Fn,
+    #[token("let")]
+    Let,
     #[regex("_?[A-Z][A-Za-z0-9]*")]
     Type,
     #[regex("_?[a-z][a-z0-9_]*")]
@@ -79,6 +81,13 @@ mod tests {
         let mut lexer = TokenKind::lexer("fn");
         assert_eq!(lexer.next(), Some(TokenKind::Fn));
         assert_eq!(lexer.slice(), "fn");
+    }
+
+    #[test]
+    fn lexes_let() {
+        let mut lexer = TokenKind::lexer("let");
+        assert_eq!(lexer.next(), Some(TokenKind::Let));
+        assert_eq!(lexer.slice(), "let");
     }
 
     #[test]
