@@ -22,8 +22,9 @@ impl Parser {
         self.tokens.last()
     }
 
-    fn at(&self, kind: crate::TokenKind) -> bool {
-        self.peek().map_or(false, |token| token.kind == kind)
+    fn at(&self, kinds: &[crate::TokenKind]) -> bool {
+        self.peek()
+            .map_or(false, |token| kinds.contains(&token.kind))
     }
 
     fn push(&mut self, kind: crate::TokenKind, group: HighlightGroup) {
@@ -66,10 +67,10 @@ impl Parser {
         self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
         self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
 
-        if self.at(crate::TokenKind::ThinArrow) {
+        if self.at(&[crate::TokenKind::ThinArrow]) {
             let thin_arrow = self.next().unwrap();
 
-            if self.at(crate::TokenKind::TypeIdent) {
+            if self.at(&[crate::TokenKind::TypeIdent]) {
                 let type_ = self.next().unwrap();
                 self.output.push(HighlightedSpan {
                     range: thin_arrow.range,
@@ -94,7 +95,7 @@ impl Parser {
 
         // Keep parsing statements until we encounter a close brace.
         loop {
-            if self.at(crate::TokenKind::CloseBrace) {
+            if self.at(&[crate::TokenKind::CloseBrace]) {
                 break;
             } else {
                 self.parse_stmt();
@@ -139,10 +140,10 @@ impl Parser {
     }
 
     fn parse_expr(&mut self, is_pattern: bool) {
-        if self.at(crate::TokenKind::Ident) {
+        if self.at(&[crate::TokenKind::Ident]) {
             let var = self.next().unwrap();
 
-            if self.at(crate::TokenKind::OpenParen) {
+            if self.at(&[crate::TokenKind::OpenParen]) {
                 self.output.push(HighlightedSpan {
                     range: var.range,
                     group: HighlightGroup::FunctionCall,
