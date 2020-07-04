@@ -39,6 +39,8 @@ pub(crate) enum TokenKind {
     CloseBrace,
     #[token("=")]
     Equals,
+    #[token(";")]
+    Semi,
     #[token("::")]
     DoubleColon,
     #[token("->")]
@@ -188,6 +190,13 @@ mod tests {
         let mut lexer = TokenKind::lexer("=");
         assert_eq!(lexer.next(), Some(TokenKind::Equals));
         assert_eq!(lexer.slice(), "=");
+    }
+
+    #[test]
+    fn lexes_semicolon() {
+        let mut lexer = TokenKind::lexer(";");
+        assert_eq!(lexer.next(), Some(TokenKind::Semi));
+        assert_eq!(lexer.slice(), ";");
     }
 
     #[test]
