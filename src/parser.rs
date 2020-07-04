@@ -119,18 +119,22 @@ impl Parser {
                 self.parse_expr(true);
                 self.push(crate::TokenKind::Equals, HighlightGroup::AssignOper);
                 self.parse_expr(false);
-            }
-            _ => self.parse_expr(false),
-        }
 
-        // Only parse semicolon if the next token is not a close brace -- if it is, then that means
-        // that we are at the end of a block and as such don’t require a semicolon.
-        match self.peek() {
-            Some(crate::Token {
-                kind: crate::TokenKind::CloseBrace,
-                ..
-            }) => {}
-            _ => self.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
+                self.push(crate::TokenKind::Semi, HighlightGroup::Terminator);
+            }
+            _ => {
+                self.parse_expr(false);
+
+                // Only parse semicolon if the next token is not a close brace -- if it is, then
+                // that means we are at the end of a block and as such don’t require a semicolon.
+                match self.peek() {
+                    Some(crate::Token {
+                        kind: crate::TokenKind::CloseBrace,
+                        ..
+                    }) => {}
+                    _ => self.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
+                }
+            }
         }
     }
 
