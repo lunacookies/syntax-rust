@@ -95,7 +95,19 @@ impl Parser {
 
     fn parse_block(&mut self) {
         self.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
-        self.parse_stmt();
+
+        // Keep parsing statements until we encounter a close brace.
+        loop {
+            if let Some(crate::Token {
+                kind: crate::TokenKind::CloseBrace,
+                ..
+            }) = self.peek()
+            {
+                break;
+            } else {
+                self.parse_stmt();
+            }
+        }
         self.push(crate::TokenKind::CloseBrace, HighlightGroup::Delimiter);
     }
 
@@ -361,6 +373,58 @@ mod tests {
                 },
                 HighlightedSpan {
                     range: 13..14,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parse_block_with_statement_and_expression() {
+        let mut parser = Parser::new("{ let a = foo(); a }");
+        parser.parse_block();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..5,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 6..7,
+                    group: HighlightGroup::VariableDef,
+                },
+                HighlightedSpan {
+                    range: 8..9,
+                    group: HighlightGroup::AssignOper,
+                },
+                HighlightedSpan {
+                    range: 10..13,
+                    group: HighlightGroup::FunctionCall,
+                },
+                HighlightedSpan {
+                    range: 13..14,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 14..15,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 15..16,
+                    group: HighlightGroup::Terminator,
+                },
+                HighlightedSpan {
+                    range: 17..18,
+                    group: HighlightGroup::VariableUse,
+                },
+                HighlightedSpan {
+                    range: 19..20,
                     group: HighlightGroup::Delimiter,
                 },
             ],
