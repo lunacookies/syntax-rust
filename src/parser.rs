@@ -93,6 +93,12 @@ impl Parser {
         }
     }
 
+    fn parse_block(&mut self) {
+        self.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
+        self.parse_stmt();
+        self.push(crate::TokenKind::CloseBrace, HighlightGroup::Delimiter);
+    }
+
     fn parse_stmt(&mut self) {
         match self.peek() {
             Some(crate::Token {
@@ -111,6 +117,16 @@ impl Parser {
                 self.parse_expr(false);
             }
             _ => self.parse_expr(false),
+        }
+
+        // Only parse semicolon if the next token is not a close brace -- if it is, then that means
+        // that we are at the end of a block and as such don’t require a semicolon.
+        match self.peek() {
+            Some(crate::Token {
+                kind: crate::TokenKind::CloseBrace,
+                ..
+            }) => {}
+            _ => self.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
         }
     }
 
@@ -288,6 +304,70 @@ mod tests {
     }
 
     #[test]
+    fn parses_block_with_one_expression() {
+        let mut parser = Parser::new("{ a }");
+        parser.parse_block();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..3,
+                    group: HighlightGroup::VariableUse,
+                },
+                HighlightedSpan {
+                    range: 4..5,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_block_with_one_statement() {
+        let mut parser = Parser::new("{ let x = y; }");
+        parser.parse_block();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..5,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 6..7,
+                    group: HighlightGroup::VariableDef,
+                },
+                HighlightedSpan {
+                    range: 8..9,
+                    group: HighlightGroup::AssignOper,
+                },
+                HighlightedSpan {
+                    range: 10..11,
+                    group: HighlightGroup::VariableUse,
+                },
+                HighlightedSpan {
+                    range: 11..12,
+                    group: HighlightGroup::Terminator,
+                },
+                HighlightedSpan {
+                    range: 13..14,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
     fn parses_let_statement() {
         let mut parser = Parser::new("let x = y;");
         parser.parse_stmt();
@@ -310,6 +390,10 @@ mod tests {
                 HighlightedSpan {
                     range: 8..9,
                     group: HighlightGroup::VariableUse,
+                },
+                HighlightedSpan {
+                    range: 9..10,
+                    group: HighlightGroup::Terminator,
                 },
             ],
         );
