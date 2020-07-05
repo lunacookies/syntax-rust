@@ -2,23 +2,40 @@
 
 #![warn(missing_debug_implementations, rust_2018_idioms)]
 
-use nom::multi::many0;
-
-mod parser;
-
 #[derive(Debug)]
 pub struct RustHighlighter;
 
-type ParserOutput<'a> = nom::IResult<&'a str, Vec<dialect::HighlightedSpan<'a>>>;
-
 impl dialect::Highlight for RustHighlighter {
-    fn highlight<'input>(&self, input: &'input str) -> Vec<dialect::HighlightedSpan<'input>> {
-        match many0(parser::parse)(input) {
-            Ok(("", spans)) => spans.into_iter().flatten().collect(),
-            _ => vec![dialect::HighlightedSpan {
-                text: input,
-                group: None,
-            }],
-        }
+    fn highlight(&self, input: &str) -> Vec<dialect::HighlightedSpan> {
+        let (analysis, file_id) = ra_ide::Analysis::from_single_file(input.to_string());
+
+        analysis
+            .highlight(file_id)
+            .unwrap()
+            .into_iter()
+            .filter_map(
+                |ra_ide::HighlightedRange {
+                     range,
+                     highlight: ra_ide::Highlight { tag, .. },
+                     ..
+                 }| {
+                    let group = match tag {
+                        ra_ide::HighlightTag::Function => {
+                            Some(dialect::HighlightGroup::FunctionDef)
+                        }
+                        ra_ide::HighlightTag::Local => Some(dialect::HighlightGroup::VariableUse),
+                        ra_ide::HighlightTag::Keyword => {
+                            Some(dialect::HighlightGroup::OtherKeyword)
+                        }
+                        _ => None,
+                    };
+
+                    group.map(|group| dialect::HighlightedSpan {
+                        range: range.start().into()..range.end().into(),
+                        group,
+                    })
+                },
+            )
+            .collect()
     }
 }
