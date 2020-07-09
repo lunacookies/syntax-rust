@@ -1,4 +1,5 @@
 mod fn_;
+mod struct_;
 
 use crate::Parser;
 use fn_::parse_fn;
