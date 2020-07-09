@@ -1,3 +1,4 @@
+use super::super::parse_block;
 use crate::Parser;
 use dialect::{HighlightGroup, HighlightedSpan};
 
@@ -30,6 +31,21 @@ pub(super) fn parse_fn(p: &mut Parser) {
             });
         }
     }
+
+    if let Some(token) = p.peek() {
+        match token.kind {
+            crate::TokenKind::Semi => p.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
+            crate::TokenKind::OpenBrace => parse_block(p),
+            _ => {
+                let token = p.next().unwrap();
+
+                p.output.push(HighlightedSpan {
+                    range: token.range,
+                    group: HighlightGroup::Error,
+                });
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -38,9 +54,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn parses_fn_def() {
+    fn parses_fn_def_with_empty_body() {
+        let mut parser = Parser::new("fn frobnicate() {}");
+        parse_fn(&mut parser);
+
         assert_eq!(
-            Parser::new("fn frobnicate()").parse(),
+            parser.output,
             vec![
                 HighlightedSpan {
                     range: 0..2,
@@ -58,46 +77,45 @@ mod tests {
                     range: 14..15,
                     group: HighlightGroup::Delimiter,
                 },
+                HighlightedSpan {
+                    range: 16..17,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 17..18,
+                    group: HighlightGroup::Delimiter,
+                },
             ],
         );
     }
 
     #[test]
-    fn parses_multiple_fn_defs() {
+    fn parses_fn_def_with_semicolon_instead_of_body() {
+        let mut parser = Parser::new("fn frobnicate();");
+        parse_fn(&mut parser);
+
         assert_eq!(
-            Parser::new("fn foo() fn bar()").parse(),
+            parser.output,
             vec![
                 HighlightedSpan {
                     range: 0..2,
                     group: HighlightGroup::OtherKeyword,
                 },
                 HighlightedSpan {
-                    range: 3..6,
+                    range: 3..13,
                     group: HighlightGroup::FunctionDef,
                 },
                 HighlightedSpan {
-                    range: 6..7,
+                    range: 13..14,
                     group: HighlightGroup::Delimiter,
                 },
                 HighlightedSpan {
-                    range: 7..8,
+                    range: 14..15,
                     group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 9..11,
-                    group: HighlightGroup::OtherKeyword,
-                },
-                HighlightedSpan {
-                    range: 12..15,
-                    group: HighlightGroup::FunctionDef,
                 },
                 HighlightedSpan {
                     range: 15..16,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 16..17,
-                    group: HighlightGroup::Delimiter,
+                    group: HighlightGroup::Terminator,
                 },
             ],
         );
@@ -105,8 +123,11 @@ mod tests {
 
     #[test]
     fn parses_fn_def_with_return_type() {
+        let mut parser = Parser::new("fn f() -> T {}");
+        parse_fn(&mut parser);
+
         assert_eq!(
-            Parser::new("fn f() -> T").parse(),
+            parser.output,
             vec![
                 HighlightedSpan {
                     range: 0..2,
@@ -132,14 +153,25 @@ mod tests {
                     range: 10..11,
                     group: HighlightGroup::TyUse
                 },
+                HighlightedSpan {
+                    range: 12..13,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 13..14,
+                    group: HighlightGroup::Delimiter,
+                },
             ],
         );
     }
 
     #[test]
     fn return_type_arrow_without_type_is_error() {
+        let mut parser = Parser::new("fn f() -> {}");
+        parse_fn(&mut parser);
+
         assert_eq!(
-            Parser::new("fn f() ->").parse(),
+            parser.output,
             vec![
                 HighlightedSpan {
                     range: 0..2,
@@ -160,6 +192,14 @@ mod tests {
                 HighlightedSpan {
                     range: 7..9,
                     group: HighlightGroup::Error,
+                },
+                HighlightedSpan {
+                    range: 10..11,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 11..12,
+                    group: HighlightGroup::Delimiter,
                 },
             ],
         );
