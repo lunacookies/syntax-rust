@@ -1,7 +1,7 @@
 use crate::Parser;
 use dialect::HighlightGroup;
 
-fn parse_struct(p: &mut Parser) {
+pub(super) fn parse_struct(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::Struct]));
 
     p.push(crate::TokenKind::Struct, HighlightGroup::OtherKeyword);
