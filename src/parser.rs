@@ -456,6 +456,42 @@ mod tests {
     }
 
     #[test]
+    fn parses_block_with_expression_that_throws_away_result_through_semicolon() {
+        let mut parser = Parser::new("{ a(); }");
+        parser.parse_block();
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..3,
+                    group: HighlightGroup::FunctionCall,
+                },
+                HighlightedSpan {
+                    range: 3..4,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 4..5,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 5..6,
+                    group: HighlightGroup::Terminator,
+                },
+                HighlightedSpan {
+                    range: 7..8,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
     fn parses_let_statement() {
         let mut parser = Parser::new("let x = y;");
         parser.parse_stmt();
