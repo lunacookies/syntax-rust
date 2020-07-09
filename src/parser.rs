@@ -43,19 +43,16 @@ impl Parser {
     }
 
     pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
-        while let Some(token) = self.next() {
+        while let Some(token) = self.peek() {
             match token.kind {
-                crate::TokenKind::Fn => {
+                crate::TokenKind::Fn => self.parse_fn_def(),
+                _ => {
+                    let range = token.range.clone();
                     self.output.push(HighlightedSpan {
-                        group: HighlightGroup::OtherKeyword,
-                        range: token.range,
-                    });
-                    self.parse_fn_def();
+                        group: HighlightGroup::Error,
+                        range,
+                    })
                 }
-                _ => self.output.push(HighlightedSpan {
-                    group: HighlightGroup::Error,
-                    range: token.range,
-                }),
             }
         }
 
@@ -63,6 +60,9 @@ impl Parser {
     }
 
     fn parse_fn_def(&mut self) {
+        assert!(self.at(&[crate::TokenKind::Fn]));
+
+        self.push(crate::TokenKind::Fn, HighlightGroup::OtherKeyword);
         self.push(crate::TokenKind::Ident, HighlightGroup::FunctionDef);
         self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
         self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
@@ -91,6 +91,7 @@ impl Parser {
     }
 
     fn parse_block(&mut self) {
+        assert!(self.at(&[crate::TokenKind::OpenBrace]));
         self.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
 
         // Keep parsing statements until we encounter a close brace.
@@ -185,12 +186,8 @@ impl Parser {
     }
 
     fn parse_tuple(&mut self, is_pattern: bool) {
-        let open_paren = self.next().unwrap();
-
-        self.output.push(HighlightedSpan {
-            range: open_paren.range,
-            group: HighlightGroup::Delimiter,
-        });
+        assert!(self.at(&[crate::TokenKind::OpenParen]));
+        self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
 
         loop {
             if self.at(&[crate::TokenKind::Comma]) {
