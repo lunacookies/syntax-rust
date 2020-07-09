@@ -1,8 +1,8 @@
-use super::parse_stmt;
+use crate::grammar::parse_stmt;
 use crate::Parser;
 use dialect::HighlightGroup;
 
-pub(super) fn parse_block(p: &mut Parser) {
+pub(crate) fn parse_block(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::OpenBrace]));
     p.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
 

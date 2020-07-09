@@ -1,8 +1,8 @@
-use super::parse_expr;
+use crate::grammar::parse_expr;
 use crate::Parser;
 use dialect::{HighlightGroup, HighlightedSpan};
 
-pub(super) fn parse_stmt(p: &mut Parser) {
+pub(crate) fn parse_stmt(p: &mut Parser) {
     match p.peek() {
         Some(crate::Token {
             kind: crate::TokenKind::Let,

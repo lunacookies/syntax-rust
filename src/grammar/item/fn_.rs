@@ -1,4 +1,4 @@
-use super::super::parse_block;
+use crate::grammar::parse_block;
 use crate::Parser;
 use dialect::{HighlightGroup, HighlightedSpan};
 
