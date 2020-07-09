@@ -41,6 +41,8 @@ pub(crate) enum TokenKind {
     Equals,
     #[token(";")]
     Semi,
+    #[token(",")]
+    Comma,
     #[token("::")]
     DoubleColon,
     #[token("->")]
@@ -197,6 +199,13 @@ mod tests {
         let mut lexer = TokenKind::lexer(";");
         assert_eq!(lexer.next(), Some(TokenKind::Semi));
         assert_eq!(lexer.slice(), ";");
+    }
+
+    #[test]
+    fn lexes_comma() {
+        let mut lexer = TokenKind::lexer(",");
+        assert_eq!(lexer.next(), Some(TokenKind::Comma));
+        assert_eq!(lexer.slice(), ",");
     }
 
     #[test]
