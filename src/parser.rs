@@ -1,9 +1,14 @@
+mod expr;
+mod stmt;
+
 use dialect::{HighlightGroup, HighlightedSpan};
+use expr::parse_expr;
+use stmt::parse_stmt;
 
 #[derive(Debug)]
 pub(crate) struct Parser {
-    tokens: Vec<crate::Token>,
-    output: Vec<HighlightedSpan>,
+    pub(self) tokens: Vec<crate::Token>,
+    pub(self) output: Vec<HighlightedSpan>,
 }
 
 impl Parser {
@@ -99,110 +104,10 @@ impl Parser {
             if self.at(&[crate::TokenKind::CloseBrace]) {
                 break;
             } else {
-                self.parse_stmt();
+                parse_stmt(self);
             }
         }
         self.push(crate::TokenKind::CloseBrace, HighlightGroup::Delimiter);
-    }
-
-    fn parse_stmt(&mut self) {
-        match self.peek() {
-            Some(crate::Token {
-                kind: crate::TokenKind::Let,
-                ..
-            }) => {
-                let let_ = self.next().unwrap();
-
-                self.output.push(HighlightedSpan {
-                    range: let_.range,
-                    group: HighlightGroup::OtherKeyword,
-                });
-
-                self.parse_expr(true);
-                self.push(crate::TokenKind::Equals, HighlightGroup::AssignOper);
-                self.parse_expr(false);
-
-                self.push(crate::TokenKind::Semi, HighlightGroup::Terminator);
-            }
-            _ => {
-                self.parse_expr(false);
-
-                // Only parse semicolon if the next token is not a close brace -- if it is, then
-                // that means we are at the end of a block and as such don’t require a semicolon.
-                if !self.at(&[crate::TokenKind::CloseBrace]) {
-                    self.push(crate::TokenKind::Semi, HighlightGroup::Terminator);
-                }
-            }
-        }
-    }
-
-    fn parse_expr(&mut self, is_pattern: bool) {
-        if let Some(token) = self.peek() {
-            match token.kind {
-                crate::TokenKind::Ident => {
-                    let var = self.next().unwrap();
-
-                    if self.at(&[crate::TokenKind::OpenParen]) {
-                        self.output.push(HighlightedSpan {
-                            range: var.range,
-                            group: HighlightGroup::FunctionCall,
-                        });
-
-                        let open_paren = self.next().unwrap();
-
-                        self.output.push(HighlightedSpan {
-                            range: open_paren.range,
-                            group: HighlightGroup::Delimiter,
-                        });
-
-                        self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
-                    } else {
-                        self.output.push(HighlightedSpan {
-                            range: var.range,
-                            group: if is_pattern {
-                                HighlightGroup::VariableDef
-                            } else {
-                                HighlightGroup::VariableUse
-                            },
-                        });
-                    }
-                }
-
-                crate::TokenKind::OpenParen => self.parse_tuple(is_pattern),
-
-                _ => {
-                    let range = token.range.clone();
-                    self.output.push(HighlightedSpan {
-                        range,
-                        group: HighlightGroup::Error,
-                    })
-                }
-            }
-        }
-    }
-
-    fn parse_tuple(&mut self, is_pattern: bool) {
-        assert!(self.at(&[crate::TokenKind::OpenParen]));
-        self.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
-
-        loop {
-            if self.at(&[crate::TokenKind::Comma]) {
-                let comma = self.next().unwrap();
-
-                self.output.push(HighlightedSpan {
-                    range: comma.range,
-                    group: HighlightGroup::Separator,
-                });
-            }
-
-            if self.at(&[crate::TokenKind::CloseParen]) {
-                break;
-            }
-
-            self.parse_expr(is_pattern);
-        }
-
-        self.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
     }
 }
 
@@ -485,180 +390,6 @@ mod tests {
                 },
                 HighlightedSpan {
                     range: 7..8,
-                    group: HighlightGroup::Delimiter,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_let_statement() {
-        let mut parser = Parser::new("let x = y;");
-        parser.parse_stmt();
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..3,
-                    group: HighlightGroup::OtherKeyword,
-                },
-                HighlightedSpan {
-                    range: 4..5,
-                    group: HighlightGroup::VariableDef,
-                },
-                HighlightedSpan {
-                    range: 6..7,
-                    group: HighlightGroup::AssignOper,
-                },
-                HighlightedSpan {
-                    range: 8..9,
-                    group: HighlightGroup::VariableUse,
-                },
-                HighlightedSpan {
-                    range: 9..10,
-                    group: HighlightGroup::Terminator,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_var_usage() {
-        let mut parser = Parser::new("foo_bar");
-        parser.parse_expr(false);
-
-        assert_eq!(
-            parser.output,
-            vec![HighlightedSpan {
-                range: 0..7,
-                group: HighlightGroup::VariableUse,
-            }],
-        );
-    }
-
-    #[test]
-    fn parses_function_call() {
-        let mut parser = Parser::new("f()");
-        parser.parse_expr(false);
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..1,
-                    group: HighlightGroup::FunctionCall,
-                },
-                HighlightedSpan {
-                    range: 1..2,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 2..3,
-                    group: HighlightGroup::Delimiter,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_empty_tuple() {
-        let mut parser = Parser::new("()");
-        parser.parse_tuple(false);
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..1,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 1..2,
-                    group: HighlightGroup::Delimiter,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_parenthesised_expression() {
-        let mut parser = Parser::new("(x)");
-        parser.parse_tuple(false);
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..1,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 1..2,
-                    group: HighlightGroup::VariableUse,
-                },
-                HighlightedSpan {
-                    range: 2..3,
-                    group: HighlightGroup::Delimiter,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_one_element_tuple() {
-        let mut parser = Parser::new("(x,)");
-        parser.parse_tuple(false);
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..1,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 1..2,
-                    group: HighlightGroup::VariableUse,
-                },
-                HighlightedSpan {
-                    range: 2..3,
-                    group: HighlightGroup::Separator,
-                },
-                HighlightedSpan {
-                    range: 3..4,
-                    group: HighlightGroup::Delimiter,
-                },
-            ],
-        );
-    }
-
-    #[test]
-    fn parses_two_element_tuple_without_trailing_comma() {
-        let mut parser = Parser::new("(x, y)");
-        parser.parse_tuple(false);
-
-        assert_eq!(
-            parser.output,
-            vec![
-                HighlightedSpan {
-                    range: 0..1,
-                    group: HighlightGroup::Delimiter,
-                },
-                HighlightedSpan {
-                    range: 1..2,
-                    group: HighlightGroup::VariableUse,
-                },
-                HighlightedSpan {
-                    range: 2..3,
-                    group: HighlightGroup::Separator,
-                },
-                HighlightedSpan {
-                    range: 4..5,
-                    group: HighlightGroup::VariableUse,
-                },
-                HighlightedSpan {
-                    range: 5..6,
                     group: HighlightGroup::Delimiter,
                 },
             ],
