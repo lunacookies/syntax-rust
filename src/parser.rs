@@ -129,12 +129,8 @@ impl Parser {
 
                 // Only parse semicolon if the next token is not a close brace -- if it is, then
                 // that means we are at the end of a block and as such don’t require a semicolon.
-                match self.peek() {
-                    Some(crate::Token {
-                        kind: crate::TokenKind::CloseBrace,
-                        ..
-                    }) => {}
-                    _ => self.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
+                if !self.at(&[crate::TokenKind::CloseBrace]) {
+                    self.push(crate::TokenKind::Semi, HighlightGroup::Terminator);
                 }
             }
         }
