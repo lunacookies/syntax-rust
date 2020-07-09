@@ -23,6 +23,8 @@ pub(crate) enum TokenKind {
     Fn,
     #[token("struct")]
     Struct,
+    #[token("trait")]
+    Trait,
     #[token("let")]
     Let,
     #[regex("_?[A-Z][A-Za-z0-9]*")]
@@ -96,6 +98,13 @@ mod tests {
         let mut lexer = TokenKind::lexer("struct");
         assert_eq!(lexer.next(), Some(TokenKind::Struct));
         assert_eq!(lexer.slice(), "struct");
+    }
+
+    #[test]
+    fn lexes_trait() {
+        let mut lexer = TokenKind::lexer("trait");
+        assert_eq!(lexer.next(), Some(TokenKind::Trait));
+        assert_eq!(lexer.slice(), "trait");
     }
 
     #[test]
