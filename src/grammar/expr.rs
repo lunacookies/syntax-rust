@@ -1,7 +1,7 @@
 use crate::Parser;
 use dialect::{HighlightGroup, HighlightedSpan};
 
-pub(super) fn parse_expr(p: &mut Parser, is_pattern: bool) {
+pub(crate) fn parse_expr(p: &mut Parser, is_pattern: bool) {
     if let Some(token) = p.peek() {
         match token.kind {
             crate::TokenKind::Ident => {
