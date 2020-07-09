@@ -1,15 +1,18 @@
 mod fn_;
 mod struct_;
+mod trait_;
 
 use crate::Parser;
 use fn_::parse_fn;
 use struct_::parse_struct;
+use trait_::parse_trait;
 
 pub(crate) fn parse_item(p: &mut Parser) {
     if let Some(token) = p.peek() {
         match token.kind {
             crate::TokenKind::Fn => parse_fn(p),
             crate::TokenKind::Struct => parse_struct(p),
+            crate::TokenKind::Trait => parse_trait(p),
 
             // parse_item should only be called if the next token has been verified to be able to
             // start an item.
@@ -41,5 +44,10 @@ mod tests {
     #[test]
     fn parses_struct() {
         test("struct Parser;", HighlightGroup::OtherKeyword);
+    }
+
+    #[test]
+    fn parses_trait() {
+        test("trait Marker {}", HighlightGroup::OtherKeyword);
     }
 }
