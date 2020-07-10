@@ -36,14 +36,7 @@ pub(super) fn parse_fn(p: &mut Parser) {
         match token.kind {
             crate::TokenKind::Semi => p.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
             crate::TokenKind::OpenBrace => parse_block(p),
-            _ => {
-                let token = p.next().unwrap();
-
-                p.output.push(HighlightedSpan {
-                    range: token.range,
-                    group: HighlightGroup::Error,
-                });
-            }
+            _ => p.eat(HighlightGroup::Error),
         }
     }
 }
