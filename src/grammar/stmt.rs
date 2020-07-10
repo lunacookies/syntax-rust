@@ -1,6 +1,6 @@
 use crate::grammar::parse_expr;
 use crate::Parser;
-use dialect::{HighlightGroup, HighlightedSpan};
+use dialect::HighlightGroup;
 
 pub(crate) fn parse_stmt(p: &mut Parser) {
     match p.peek() {
@@ -31,6 +31,7 @@ pub(crate) fn parse_stmt(p: &mut Parser) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use dialect::HighlightedSpan;
     use pretty_assertions::assert_eq;
 
     #[test]
