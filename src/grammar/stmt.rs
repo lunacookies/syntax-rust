@@ -8,12 +8,7 @@ pub(crate) fn parse_stmt(p: &mut Parser) {
             kind: crate::TokenKind::Let,
             ..
         }) => {
-            let let_ = p.next().unwrap();
-
-            p.output.push(HighlightedSpan {
-                range: let_.range,
-                group: HighlightGroup::OtherKeyword,
-            });
+            p.eat(HighlightGroup::OtherKeyword);
 
             parse_expr(p, true);
             p.push(crate::TokenKind::Equals, HighlightGroup::AssignOper);

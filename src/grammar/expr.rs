@@ -42,26 +42,20 @@ pub(crate) fn parse_expr(p: &mut Parser, is_pattern: bool) {
 
 fn parse_tuple(p: &mut Parser, is_pattern: bool) {
     assert!(p.at(&[crate::TokenKind::OpenParen]));
-    p.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
+    p.eat(HighlightGroup::Delimiter);
 
     loop {
         if p.at(&[crate::TokenKind::Comma]) {
-            let comma = p.next().unwrap();
-
-            p.output.push(HighlightedSpan {
-                range: comma.range,
-                group: HighlightGroup::Separator,
-            });
+            p.eat(HighlightGroup::Separator);
         }
 
         if p.at(&[crate::TokenKind::CloseParen]) {
+            p.eat(HighlightGroup::Delimiter);
             break;
         }
 
         parse_expr(p, is_pattern);
     }
-
-    p.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
 }
 
 #[cfg(test)]

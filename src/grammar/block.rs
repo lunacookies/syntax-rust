@@ -4,17 +4,17 @@ use dialect::HighlightGroup;
 
 pub(crate) fn parse_block(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::OpenBrace]));
-    p.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
+    p.eat(HighlightGroup::Delimiter);
 
     // Keep parsing statements until we encounter a close brace.
     loop {
         if p.at(&[crate::TokenKind::CloseBrace]) {
+            p.eat(HighlightGroup::Delimiter);
             break;
-        } else {
-            parse_stmt(p);
         }
+
+        parse_stmt(p);
     }
-    p.push(crate::TokenKind::CloseBrace, HighlightGroup::Delimiter);
 }
 
 #[cfg(test)]

@@ -4,8 +4,8 @@ use dialect::{HighlightGroup, HighlightedSpan};
 
 pub(super) fn parse_fn(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::Fn]));
+    p.eat(HighlightGroup::OtherKeyword);
 
-    p.push(crate::TokenKind::Fn, HighlightGroup::OtherKeyword);
     p.push(crate::TokenKind::Ident, HighlightGroup::FunctionDef);
     p.push(crate::TokenKind::OpenParen, HighlightGroup::Delimiter);
     p.push(crate::TokenKind::CloseParen, HighlightGroup::Delimiter);
@@ -34,7 +34,7 @@ pub(super) fn parse_fn(p: &mut Parser) {
 
     if let Some(token) = p.peek() {
         match token.kind {
-            crate::TokenKind::Semi => p.push(crate::TokenKind::Semi, HighlightGroup::Terminator),
+            crate::TokenKind::Semi => p.eat(HighlightGroup::Terminator),
             crate::TokenKind::OpenBrace => parse_block(p),
             _ => p.eat(HighlightGroup::Error),
         }
