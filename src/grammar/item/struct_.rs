@@ -3,8 +3,8 @@ use dialect::HighlightGroup;
 
 pub(super) fn parse_struct(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::Struct]));
+    p.eat(HighlightGroup::OtherKeyword);
 
-    p.push(crate::TokenKind::Struct, HighlightGroup::OtherKeyword);
     p.push(crate::TokenKind::TypeIdent, HighlightGroup::TyDef);
     p.push(crate::TokenKind::Semi, HighlightGroup::Terminator);
 }

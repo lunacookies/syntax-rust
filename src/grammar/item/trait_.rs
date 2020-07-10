@@ -4,22 +4,21 @@ use dialect::HighlightGroup;
 
 pub(super) fn parse_trait(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::Trait]));
+    p.eat(HighlightGroup::OtherKeyword);
 
-    p.push(crate::TokenKind::Trait, HighlightGroup::OtherKeyword);
     p.push(crate::TokenKind::TypeIdent, HighlightGroup::InterfaceDef);
 
     p.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
 
     loop {
         if p.at(&[crate::TokenKind::CloseBrace]) {
+            p.eat(HighlightGroup::Delimiter);
             break;
-        } else {
+        }
+
             parse_item(p);
         }
     }
-
-    p.push(crate::TokenKind::CloseBrace, HighlightGroup::Delimiter);
-}
 
 #[cfg(test)]
 mod tests {
