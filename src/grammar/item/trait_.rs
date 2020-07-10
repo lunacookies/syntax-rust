@@ -16,9 +16,9 @@ pub(super) fn parse_trait(p: &mut Parser) {
             break;
         }
 
-            parse_item(p);
-        }
+        parse_item(p);
     }
+}
 
 #[cfg(test)]
 mod tests {
@@ -96,6 +96,42 @@ mod tests {
                 },
                 HighlightedSpan {
                     range: 18..19,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_trait_with_erroneous_contents() {
+        let mut parser = Parser::new("trait A { not valid }");
+        parse_trait(&mut parser);
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..5,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 6..7,
+                    group: HighlightGroup::InterfaceDef,
+                },
+                HighlightedSpan {
+                    range: 8..9,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 10..13,
+                    group: HighlightGroup::Error,
+                },
+                HighlightedSpan {
+                    range: 14..19,
+                    group: HighlightGroup::Error,
+                },
+                HighlightedSpan {
+                    range: 20..21,
                     group: HighlightGroup::Delimiter,
                 },
             ],
