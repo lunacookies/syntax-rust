@@ -35,14 +35,7 @@ pub(crate) fn parse_expr(p: &mut Parser, is_pattern: bool) {
 
             crate::TokenKind::OpenParen => parse_tuple(p, is_pattern),
 
-            _ => {
-                let token = p.next().unwrap();
-
-                p.output.push(HighlightedSpan {
-                    range: token.range,
-                    group: HighlightGroup::Error,
-                })
-            }
+            _ => p.eat(HighlightGroup::Error),
         }
     }
 }

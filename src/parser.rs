@@ -27,14 +27,8 @@ impl Parser {
             .map_or(false, |token| kinds.contains(&token.kind))
     }
 
-    pub(crate) fn push(&mut self, kind: crate::TokenKind, group: HighlightGroup) {
+    pub(crate) fn eat(&mut self, group: HighlightGroup) {
         if let Some(token) = self.next() {
-            let group = if kind == token.kind {
-                group
-            } else {
-                HighlightGroup::Error
-            };
-
             self.output.push(HighlightedSpan {
                 range: token.range,
                 group,
@@ -42,17 +36,24 @@ impl Parser {
         }
     }
 
+    pub(crate) fn push(&mut self, kind: crate::TokenKind, group: HighlightGroup) {
+        if self.at(&[kind]) {
+            let token = self.next().unwrap();
+
+            self.output.push(HighlightedSpan {
+                range: token.range,
+                group,
+            });
+        } else {
+            self.eat(HighlightGroup::Error);
+        }
+    }
+
     pub(crate) fn parse(mut self) -> Vec<HighlightedSpan> {
         while let Some(token) = self.peek() {
             match token.kind {
                 crate::TokenKind::Fn => crate::grammar::parse_item(&mut self),
-                _ => {
-                    let range = token.range.clone();
-                    self.output.push(HighlightedSpan {
-                        group: HighlightGroup::Error,
-                        range,
-                    })
-                }
+                _ => self.eat(HighlightGroup::Error),
             }
         }
 
