@@ -10,7 +10,7 @@ homepage = "https://github.com/arzg/syntax-rust"
 repository = "https://github.com/arzg/syntax-rust"
 
 [dependencies]
-dialect = "0.3"
+dialect = "0.4"
 logos = "0.11"
 
 [dev-dependencies]
