@@ -27,6 +27,10 @@ impl Parser {
             .map_or(false, |token| kinds.contains(&token.kind))
     }
 
+    pub(crate) fn at_end(&self) -> bool {
+        self.peek().is_none()
+    }
+
     pub(crate) fn eat(&mut self, group: HighlightGroup) {
         if let Some(token) = self.next() {
             self.output.push(HighlightedSpan {

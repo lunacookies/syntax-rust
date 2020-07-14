@@ -45,6 +45,10 @@ fn parse_tuple(p: &mut Parser, is_pattern: bool) {
     p.eat(HighlightGroup::Delimiter);
 
     loop {
+        if p.at_end() {
+            break;
+        }
+
         if p.at(&[crate::TokenKind::Comma]) {
             p.eat(HighlightGroup::Separator);
         }
@@ -200,6 +204,26 @@ mod tests {
                 HighlightedSpan {
                     range: 5..6,
                     group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_tuple_with_unclosed_paren() {
+        let mut parser = Parser::new("(x");
+        parse_tuple(&mut parser, false);
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 1..2,
+                    group: HighlightGroup::VariableUse,
                 },
             ],
         );
