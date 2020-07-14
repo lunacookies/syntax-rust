@@ -6,8 +6,11 @@ pub(crate) fn parse_block(p: &mut Parser) {
     assert!(p.at(&[crate::TokenKind::OpenBrace]));
     p.eat(HighlightGroup::Delimiter);
 
-    // Keep parsing statements until we encounter a close brace.
     loop {
+        if p.at_end() {
+            break;
+        }
+
         if p.at(&[crate::TokenKind::CloseBrace]) {
             p.eat(HighlightGroup::Delimiter);
             break;
@@ -171,6 +174,26 @@ mod tests {
                     range: 7..8,
                     group: HighlightGroup::Delimiter,
                 },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_block_with_unclosed_brace() {
+        let mut parser = Parser::new("{ a");
+        parse_block(&mut parser);
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..1,
+                    group: HighlightGroup::Delimiter,
+                },
+                HighlightedSpan {
+                    range: 2..3,
+                    group: HighlightGroup::VariableUse
+                }
             ],
         );
     }

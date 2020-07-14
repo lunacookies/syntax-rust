@@ -11,6 +11,10 @@ pub(super) fn parse_trait(p: &mut Parser) {
     p.push(crate::TokenKind::OpenBrace, HighlightGroup::Delimiter);
 
     loop {
+        if p.at_end() {
+            break;
+        }
+
         if p.at(&[crate::TokenKind::CloseBrace]) {
             p.eat(HighlightGroup::Delimiter);
             break;
@@ -132,6 +136,30 @@ mod tests {
                 },
                 HighlightedSpan {
                     range: 20..21,
+                    group: HighlightGroup::Delimiter,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn parses_trait_with_unclosed_brace() {
+        let mut parser = Parser::new("trait A {");
+        parse_trait(&mut parser);
+
+        assert_eq!(
+            parser.output,
+            vec![
+                HighlightedSpan {
+                    range: 0..5,
+                    group: HighlightGroup::OtherKeyword,
+                },
+                HighlightedSpan {
+                    range: 6..7,
+                    group: HighlightGroup::InterfaceDef,
+                },
+                HighlightedSpan {
+                    range: 8..9,
                     group: HighlightGroup::Delimiter,
                 },
             ],
